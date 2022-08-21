@@ -1,0 +1,54 @@
+#clockFace {
+	position:relative;
+	height: 250px;
+	width:250px;
+	background-size: 100%;
+}
+
+.dayFace {
+	background: url(../img/ClockFaceWhite.png) no-repeat;
+}
+
+.nightFace {
+	background: url(../img/ClockFaceBlack.png) no-repeat;
+}
+
+.dayHand {
+	background: black;
+}
+
+.nightHand {
+	background: white;
+}
+
+#hourHand,
+#minuteHand,
+#secondHand {
+	position: absolute;
+	border-radius: 10px;
+	transform-origin: bottom;
+}
+
+#hourHand {
+	width: 1.8%;
+	height: 25%;
+	top: 25%;
+	left: 48.85%;
+	opacity: 0.8;
+}
+
+#minuteHand {
+	width: 1.6%;
+	height: 30%;
+	top: 19%;
+	left: 48.9%;
+	opacity: 0.8;
+}
+
+#secondHand {
+	width: 1%;
+	height: 40%;
+	top: 9%;
+	left: 49.25%;
+	opacity: 0.8;
+}
