@@ -1,0 +1,12 @@
+[Unit]
+Description=Alarm Clock
+After=multi-user.target
+
+[Service]
+User=pi
+Type=idle
+WorkingDirectory=/home/pi/alarmclock/
+ExecStart=flask --app alarmclock.py run --host=0.0.0.0
+
+[Install]  
+WantedBy=multi-user.target

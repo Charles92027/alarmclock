@@ -1,7 +1,7 @@
 from pygame import mixer
 
 mixer.init()
-mixer.music.load("Honor.mp3")
+mixer.music.load("../sounds/Honor.mp3")
 mixer.music.set_volume(1.0)
 
 try :
