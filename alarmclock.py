@@ -90,7 +90,7 @@ def showIpSwitch(channel):
 
 	global showTime
 
-	if GPIO.input(channel) == GPIO.HIGH:
+	if GPIO.input(channel) == GPIO.LOW:
 
 		showTime = False
 		display.fill(0)
@@ -107,13 +107,10 @@ def showIpSwitch(channel):
 			sock.close()
 
 		message = ipAddress.replace(".", "-") + "   "
-
-		while GPIO.input(channel) == GPIO.HIGH:
-			display.marquee(message, 0.25, False)
+		display.marquee(message, 0.25, False)
 
 		stringTime = "  " + strftime("%-I%M")
 		message = message + stringTime[-5:]
-
 		display.marquee(message, 0.25, False)
 		
 		displayTime()
@@ -122,7 +119,7 @@ def showIpSwitch(channel):
 
 
 GPIO.add_event_detect(buttonPin, GPIO.RISING, callback = buttonPressed, bouncetime = 500)
-GPIO.add_event_detect(showIpPin, GPIO.RISING, callback = showIpSwitch, bouncetime = 500)
+GPIO.add_event_detect(showIpPin, GPIO.FALLING, callback = showIpSwitch, bouncetime = 500)
 
 clockThread = threading.Thread(target = timeLoop)
 clockThread.start()
