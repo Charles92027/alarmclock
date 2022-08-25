@@ -1,13 +1,12 @@
-import board, time, threading, atexit, os
+import board, time, threading, atexit
 import RPi.GPIO as GPIO
 import socket
 
 from adafruit_ht16k33.segments import BigSeg7x4
 from time import strftime
-from flask import Flask
-from flask import render_template
 from pygame import mixer
 
+from flask import Flask
 
 done = False
 showTime = True
@@ -149,27 +148,5 @@ def shutDown():
 atexit.register(shutDown)
 
 app = Flask(__name__)
+import website
 
-@app.route("/")
-def index():
-	return render_template("index.html")
-
-
-@app.route("/sounds/")
-def listSounds():
-	sounds = []
-	for file in os.listdir("sounds/"):
-		if file.endswith(".mp3"):
-			sounds.append(file)
-
-	print(sounds)
-	return(sounds)
-
-@app.route("/sounds/<sound>/play/")
-def playSound(sound):
-
-	print("playing " + sound)
-	mixer.music.load("sounds/" + sound)
-	mixer.music.play()
-	
-	return(sound)
