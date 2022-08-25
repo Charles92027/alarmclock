@@ -2,6 +2,7 @@ import board, time, threading, atexit
 import RPi.GPIO as GPIO
 import socket
 import sounds
+#import button
 
 from adafruit_ht16k33.segments import BigSeg7x4
 from time import strftime
@@ -50,12 +51,20 @@ def timeLoop():
 		displayTime()
 		time.sleep(.5)
 
-def flashButton(count):
+
+def lightButton():
+	GPIO.output(buttonLedPin, GPIO.HIGH)
+
+def unLightButton():
+	GPIO.output(buttonLedPin, GPIO.LOW)
+
+def flash(count):
 	for counter in range(count):
-		GPIO.output(buttonLedPin, GPIO.HIGH)
+		lightButton()
 		time.sleep(.2)
-		GPIO.output(buttonLedPin, GPIO.LOW)
+		unLightButton()
 		time.sleep(.2)
+
 
 def buttonPressed(channel):
 	
@@ -83,7 +92,7 @@ def buttonPressed(channel):
 
 		displayTime()
 		showTime = True
-		flashButton(3)
+		flash(3)
 
 def showIpSwitch(channel):
 
@@ -124,7 +133,7 @@ GPIO.add_event_detect(showIpPin, GPIO.FALLING, callback = showIpSwitch, bounceti
 clockThread = threading.Thread(target = timeLoop)
 clockThread.start()
 
-flashButton(5)
+flash(5)
 
 def shutDown():
 

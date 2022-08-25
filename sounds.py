@@ -1,16 +1,20 @@
 from pygame import mixer
 import os
 
-volume = .5
 
-mixer.init()
-mixer.music.set_volume(volume)
+volume = 0
+
+def init():
+	global volume
+	
+	volume = .5		#initialize from config
+	
+	mixer.init()
+	mixer.music.set_volume(volume)
 
 def setVolume(newVolume):
-
 	global volume;
 	volume = newVolume
-
 	return volume;
 
 
