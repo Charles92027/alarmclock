@@ -1,6 +1,7 @@
 import os
 from flask import render_template
 from alarmclock import app
+import sounds
 
 @app.route("/")
 def index():
@@ -9,19 +10,10 @@ def index():
 
 @app.route("/sounds/")
 def listSounds():
-	sounds = []
-	for file in os.listdir("sounds/"):
-		if file.endswith(".mp3"):
-			sounds.append(file)
+	return(sounds.listSounds())
 
-	print(sounds)
-	return(sounds)
-
-@app.route("/sounds/<sound>/play/")
+@app.route("/sounds/<sound>/play")
 def playSound(sound):
 
-	print("playing " + sound)
-	mixer.music.load("sounds/" + sound)
-	mixer.music.play()
-	
+	sounds.play(sound)
 	return(sound)

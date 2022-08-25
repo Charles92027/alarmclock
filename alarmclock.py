@@ -1,10 +1,10 @@
 import board, time, threading, atexit
 import RPi.GPIO as GPIO
 import socket
+import sounds
 
 from adafruit_ht16k33.segments import BigSeg7x4
 from time import strftime
-from pygame import mixer
 
 from flask import Flask
 
@@ -33,10 +33,6 @@ showIpPin = 26
 GPIO.setup(buttonLedPin, GPIO.OUT)
 GPIO.setup(buttonPin, GPIO.IN)
 GPIO.setup(showIpPin, GPIO.IN)
-
-mixer.init()
-mixer.music.set_volume(1.0)
-mixer.music.load("sounds/snare.mp3")
 
 def displayTime():
 
