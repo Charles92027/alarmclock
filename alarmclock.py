@@ -1,4 +1,4 @@
-import board, time, threading, atexit
+import board, time, threading, atexit, os
 import RPi.GPIO as GPIO
 
 from adafruit_ht16k33.segments import BigSeg7x4
@@ -14,7 +14,10 @@ import socket
 done = False
 showTime = True
 
-lights = [[0b00000001, 0b00000000, 0b00000000, 0b00000000],[0b00000000, 0b00000001, 0b00000000, 0b00000000],[0b00000000, 0b00000000, 0b00000001, 0b00000000],[0b00000000, 0b00000000, 0b00000000, 0b00000001],[0b00000000, 0b00000000, 0b00000000, 0b00000010],[0b00000000, 0b00000000, 0b00000000, 0b00000100],[0b00000000, 0b00000000, 0b00000000, 0b00001000],[0b00000000, 0b00000000, 0b00001000, 0b00000000],[0b00000000, 0b00001000, 0b00000000, 0b00000000],[0b00001000, 0b00000000, 0b00000000, 0b00000000],[0b00010000, 0b00000000, 0b00000000, 0b00000000],[0b00100000, 0b00000000, 0b00000000, 0b00000000]]
+lights = [[0b00000001, 0b00000000, 0b00000000, 0b00000000],[0b00000000, 0b00000001, 0b00000000, 0b00000000],[0b00000000, 0b00000000, 0b00000001, 0b00000000],
+	[0b00000000, 0b00000000, 0b00000000, 0b00000001],[0b00000000, 0b00000000, 0b00000000, 0b00000010],[0b00000000, 0b00000000, 0b00000000, 0b00000100],
+	[0b00000000, 0b00000000, 0b00000000, 0b00001000],[0b00000000, 0b00000000, 0b00001000, 0b00000000],[0b00000000, 0b00001000, 0b00000000, 0b00000000],
+	[0b00001000, 0b00000000, 0b00000000, 0b00000000],[0b00010000, 0b00000000, 0b00000000, 0b00000000],[0b00100000, 0b00000000, 0b00000000, 0b00000000]]
 
 i2c = board.I2C()
 display = BigSeg7x4(i2c, address=0x70)
@@ -70,8 +73,8 @@ def buttonPressed(channel):
 		index = 0
 		
 		while GPIO.input(channel) == GPIO.HIGH:
-			if mixer.music.get_busy() == False:
-				mixer.music.play()
+			#if mixer.music.get_busy() == False:
+			#	mixer.music.play()
 			display.set_digit_raw(0, lights[index][0])
 			display.set_digit_raw(1, lights[index][1])
 			display.set_digit_raw(2, lights[index][2])
@@ -107,8 +110,9 @@ def showIpSwitch(channel):
 			sock.close()
 
 		message = ipAddress.replace(".", "-") + "   "
-		display.marquee(message, 0.25, False)
-
+		while GPIO.input(channel) == GPIO.LOW:
+			display.marquee(message, 0.25, False)
+		
 		stringTime = "  " + strftime("%-I%M")
 		message = message + stringTime[-5:]
 		display.marquee(message, 0.25, False)
@@ -143,9 +147,22 @@ def shutDown():
 
 atexit.register(shutDown)
 
+
+
+
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+	return render_template("index.html")
 
+
+@app.route("/sounds/")
+def listSounds():
+	sounds = []
+	for file in os.listdir("sounds/"):
+		if file.endswith(".mp3"):
+			sounds.append(file)
+
+	print(sounds)
+	return(sounds)
