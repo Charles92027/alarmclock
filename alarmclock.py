@@ -148,9 +148,6 @@ def shutDown():
 
 atexit.register(shutDown)
 
-
-
-
 app = Flask(__name__)
 
 @app.route("/")
@@ -167,3 +164,12 @@ def listSounds():
 
 	print(sounds)
 	return(sounds)
+
+@app.route("/sounds/<sound>/play/")
+def playSound(sound):
+
+	print("playing " + sound)
+	mixer.music.load("sounds/" + sound)
+	mixer.music.play()
+	
+	return(sound)

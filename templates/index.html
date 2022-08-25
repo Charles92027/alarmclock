@@ -10,6 +10,7 @@
 	<body id="body">
 		<script type="text/javascript" src="{{ url_for('static', filename='js/utility.js')}}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/clock.js')}}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/sounds.js')}}"></script>
 
 		<table id="indexTable">
 			<tr>
@@ -46,10 +47,15 @@
 				</td>
 			</tr>
 			<tr>
-				<td id="musicCell">
-					Music
+				<td id="soundsCell">
+					<table id="soundsTable">
+					</table>
 				</td>
 			</tr>
 		</table>
 	</body>
+	<script type="text/javascript">
+		loadSoundsList();
+	</script>
+	
 </html>
