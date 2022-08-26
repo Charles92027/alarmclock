@@ -1,26 +1,5 @@
 from pygame import mixer
-import os
-
-
-volume = 0
-
-def init():
-	global volume
-	
-	volume = .5		#initialize from config
-	
-	mixer.init()
-	mixer.music.set_volume(volume)
-
-def setVolume(newVolume):
-	global volume;
-	volume = newVolume
-	return volume;
-
-
-def getVolume():
-	global volume;
-	return volume;
+import os, threading
 
 def listSounds():
 	sounds = []
@@ -31,19 +10,37 @@ def listSounds():
 	print(sounds)
 	return(sounds)
 
+class Player:
 
-def play(sound):
-	print("playing " + sound)
-	mixer.music.load("sounds/" + sound)
-	mixer.music.play()
-	
+	volume = .5
 
-def stop():
-	mixer.stop();
+	def __init__(self):
 	
-def playng():
-	return mixer.music.get_busy()
+		mixer.init()
+		self.setVolume(.5)		#initialize from config
+		print("player initialized")
 	
-def whilePlaying():
-	while mixer.music.get_busy():
-		pass
+	def setVolume(self, volume):
+		
+		self.volume = volume
+		mixer.music.set_volume(self.volume)
+
+	def getVolume():
+		return self.volume;
+
+	def play(self, sound):
+		print("playing " + sound)
+		mixer.music.load("sounds/" + sound)
+		mixer.music.play()
+
+	def stop():
+		mixer.stop();
+	
+	def playng():
+		return mixer.music.get_busy()
+	
+	def whilePlaying():
+		while mixer.music.get_busy():
+			pass
+
+player = Player()

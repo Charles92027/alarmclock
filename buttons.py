@@ -15,8 +15,6 @@ class BigButton:
 
 		GPIO.add_event_detect(self.bigButtonPin, GPIO.RISING, callback = self.pressed, bouncetime = 500)
 
-		self.flash(5)
-		
 		print("big button initialized")
 
 	def light(self):
@@ -44,7 +42,7 @@ class BigButton:
 
 			print("big button released")
 
-			self.flash(1)
+			self.flash(2)
 
 
 class LittleButton:
@@ -71,7 +69,7 @@ class LittleButton:
 			print("little button released")
 
 			global bigButton
-			bigButton.flash(3)
+			bigButton.flash(1)
 		
 bigButton = BigButton()
 littleButton = LittleButton()
