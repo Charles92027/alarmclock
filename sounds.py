@@ -1,4 +1,5 @@
 from pygame import mixer
+from threading import Thread
 import os, threading
 
 def listSounds():
@@ -13,33 +14,41 @@ def listSounds():
 class Player:
 
 	volume = .5
+	playThread = None
+
 
 	def __init__(self):
 	
 		mixer.init()
 		self.setVolume(.5)		#initialize from config
 		print("player initialized")
-	
+		
 	def setVolume(self, volume):
 		
 		self.volume = volume
 		mixer.music.set_volume(self.volume)
 
-	def getVolume():
+	def getVolume(self):
 		return self.volume;
 
 	def play(self, sound):
+		
+		self.stop()
+		
 		print("playing " + sound)
 		mixer.music.load("sounds/" + sound)
 		mixer.music.play()
+		
+		self.playThread = threading.Thread(target = self.whilePlaying)
+		self.playThread.start()
 
-	def stop():
+	def stop(self):
 		mixer.stop();
 	
-	def playng():
+	def playng(self):
 		return mixer.music.get_busy()
 	
-	def whilePlaying():
+	def whilePlaying(self):
 		while mixer.music.get_busy():
 			pass
 

@@ -2,11 +2,23 @@ import threading, atexit
 from buttons import bigButton
 from buttons import littleButton
 
-import second
+from second import testThis
+from second import ClockState
 
 done = False
 
-second.testThis()
+
+print("testThis.state = ", testThis.getState())
+testThis.setState(ClockState.TIME)
+print("testThis.state = ", testThis.getState())
+testThis.setState(ClockState.CHASING)
+print("testThis.state = ", testThis.getState())
+testThis.setState(ClockState.ADDRESS)
+print("testThis.state = ", testThis.getState())
+testThis.setState(ClockState.HELLO)
+print("testThis.state = ", testThis.getState())
+
+
 
 def waitForDone():
 
