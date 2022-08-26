@@ -7,6 +7,8 @@ from buttons import littleButton
 from flask import Flask
 
 bigButton.flash(5)
+clockFace.setState(ClockState.ADDRESS)
+time.sleep(.5)
 clockFace.setState(ClockState.TIME)
 
 done = False

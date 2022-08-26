@@ -145,6 +145,7 @@ class ClockFace:
 		print("new clockFace State = ", state)
 
 		self.state = state
-
+		if self.state == ClockState.DONE:
+			self.stateThread.join()
 		
 clockFace = ClockFace()
