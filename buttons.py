@@ -1,4 +1,6 @@
 import time, RPi.GPIO as GPIO
+from clock import ClockState
+from clock import clockFace
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -35,10 +37,12 @@ class BigButton:
 		if GPIO.input(channel) == GPIO.HIGH:
 		
 			print("big button pressed")
-		
+			clockFace.setState(ClockState.CHASING)
+
 			while GPIO.input(channel) == GPIO.HIGH:
-				# while pressed display chasing lights
 				pass
+
+			clockFace.setState(ClockState.TIME)
 
 			print("big button released")
 
@@ -61,11 +65,12 @@ class LittleButton:
 		if GPIO.input(channel) == GPIO.LOW:
 			
 			print("little button pressed")
-		
+			clockFace.setState(ClockState.ADDRESS)
+			
 			while GPIO.input(channel) == GPIO.LOW:
-				# while pressed display ip address
 				pass
 
+			clockFace.setState(ClockState.TIME)
 			print("little button released")
 
 			global bigButton
