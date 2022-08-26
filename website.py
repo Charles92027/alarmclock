@@ -2,7 +2,7 @@ import os
 from flask import render_template
 from alarmclock import app
 import sounds
-from sounds inport player
+from sounds import player
 
 @app.route("/")
 def index():
