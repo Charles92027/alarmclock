@@ -16,9 +16,7 @@ class ClockFace:
 	display = None
 	
 	state = ClockState.HELLO
-	
 	stateThread = None
-	changeState = False
 
 	def __init__(self):
 		self.i2c = board.I2C()
@@ -47,18 +45,22 @@ class ClockFace:
 		print("clockFace State = ", self.state)
 	
 		self.printHello()
-		while(self.changeState == False):
+		while(self.state == ClockState.HELLO):
 			time.sleep(.5)
+		
+		self.nextState()
 		
 	def timeState(self):
 	
 		print("clockFace State = ", self.state)
 	
 		self.clear()
-		while(self.changeState == False):
+		while(self.state == ClockState.TIME):
 			stringTime = "  " + strftime("%-I:%M")
 			self.display.print(stringTime[-5:])
 			time.sleep(.5)
+
+		self.nextState()
 	
 	def chasingState(self):
 	
@@ -75,7 +77,7 @@ class ClockFace:
 		self.clear()
 		index = 0
 		
-		while(self.changeState == False):
+		while(self.state == ClockState.CHASING):
 			self.display.set_digit_raw(0, lights[index][0])
 			self.display.set_digit_raw(1, lights[index][1])
 			self.display.set_digit_raw(2, lights[index][2])
@@ -85,6 +87,8 @@ class ClockFace:
 			index = index + 1
 			if (index > 11):
 				index = 0
+
+		self.nextState()
 			
 	def addressState(self):
 	
@@ -103,25 +107,17 @@ class ClockFace:
 
 		message = ipAddress.replace(".", "-") + "   "
 		
-		while(self.changeState == False):
+		while(self.state == ClockState.ADDRESS):
 			self.display.marquee(message, 0.25, False)
 		
 		stringTime = "  " + strftime("%-I%M")
 		message = message + stringTime[-5:]
 		self.display.marquee(message, 0.25, False)	
 	
-	def setState(self, state):
+		self.nextState()
 	
-		print("current clockFace State = ", self.state)
+	def nextState(self):
 	
-		self.changeState = True
-		self.stateThread.join()
-		
-		print("new clockFace State = ", state)
-
-		self.changeState = False
-		self.state = state
-		
 		if self.state == ClockState.HELLO:
 			self.stateThread = threading.Thread(target = self.helloState)
 			self.stateThread.start()
@@ -140,6 +136,15 @@ class ClockFace:
 
 		else:
 			self.stateThread = threading.Thread(target = self.timeState)
-			self.stateThread.start()
+			self.stateThread.start()	
+	
+	def setState(self, state):
+	
+		print("current clockFace State = ", self.state)
+	
+		print("new clockFace State = ", state)
+
+		self.state = state
+
 		
 clockFace = ClockFace()
