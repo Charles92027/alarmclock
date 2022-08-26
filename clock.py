@@ -138,12 +138,24 @@ class ClockFace:
 			self.stateThread = threading.Thread(target = self.timeState)
 			self.stateThread.start()	
 	
+	def hello(self):
+		self.state = ClockState.HELLO
+		
+	def chase(self):
+		self.state = ClockState.CHASING
+		
+	def address(self):
+		self.state = ClockState.ADDRESS
+		
+	def time(self):
+		self.state 	= ClockState.TIME
+		
+	def done(self):
+		self.state = ClockState.DONE
+		self.stateThread.join()
+	
 	def setState(self, state):
 	
-		print("current clockFace State = ", self.state)
-	
-		print("new clockFace State = ", state)
-
 		self.state = state
 		if self.state == ClockState.DONE:
 			self.stateThread.join()

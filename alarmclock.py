@@ -1,15 +1,14 @@
 import threading, atexit, time
 import RPi.GPIO as GPIO
-from clock import ClockState
 from clock import clockFace
 from buttons import bigButton
 from buttons import littleButton
 from flask import Flask
 
 bigButton.flash(5)
-clockFace.setState(ClockState.ADDRESS)
+clockFace.address()
 time.sleep(.5)
-clockFace.setState(ClockState.TIME)
+clockFace.time()
 
 done = False
 
@@ -28,7 +27,7 @@ def shutDown():
 	
 	print("shutting down")
 
-	clockFace.setState(ClockState.DONE)
+	clockFace.done()
 	
 	done = True
 	waitThread.join()
