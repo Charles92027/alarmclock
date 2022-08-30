@@ -1,49 +1,87 @@
 import sqlite3
+from datetime import date
+from datetime import timedelta
 
-schema = """CREATE TABLE IF NOT EXISTS alarm (
-		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		theTime TIME NOT NULL,
-		startDate DATE NOT NULL DEFAULT CURRENT_DATE,
-		endDate DATE NULL,
-		disabled BIT DEFAULT FALSE
-	);
+schema = """
+			CREATE TABLE IF NOT EXISTS clock (
+				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+				theTime TIME NOT NULL
+			);
+			CREATE UNIQUE INDEX IF NOT EXISTS ix_clock_theTime ON clock (theTime);
 
-	CREATE TABLE IF NOT EXISTS weekDay (
-		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		alarmId INTEGER NOT NULL REFERENCES alarm(id),
-		weekDay INTEGER NOT NULL
-	);
+			CREATE TABLE IF NOT EXISTS calendar (
+				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+				theDate DATE NOT NULL,
+				theDay INT NOT NULL
+			);
+			CREATE UNIQUE INDEX IF NOT EXISTS ix_calendar ON calendar (theDate);
 
-	CREATE TABLE IF NOT EXISTS skip (
-		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		alarmId INTEGER NOT NULL REFERENCES alarm(id),
-		theDate DATETIME NOT NULL
-	);"""
+			CREATE TABLE IF NOT EXISTS alarm (
+				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+				theTime TIME NOT NULL,
+				startDate DATE NOT NULL DEFAULT CURRENT_DATE,
+				endDate DATE NOT NULL,
+				disabled BIT DEFAULT FALSE
+			);
+			CREATE INDEX IF NOT EXISTS ix_alarm_startDate ON alarm (startDate);
+			CREATE INDEX IF NOT EXISTS ix_alarm_endDate ON alarm (endDate);
+
+			CREATE TABLE IF NOT EXISTS alarmSound (
+				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+				alarmId INT NOT NULL REFERENCES alarm(id),
+				sound TEXT NOT NULL
+			);
+
+			CREATE TABLE IF NOT EXISTS weekDay (
+				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+				alarmId INT NOT NULL REFERENCES alarm(id),
+				theDay INT NOT NULL
+			);
+
+			CREATE TABLE IF NOT EXISTS skip (
+				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+				alarmId INT NOT NULL REFERENCES alarm(id),
+				theDate DATETIME NOT NULL
+			);
+		"""
 
 print(schema);
 
-connection = sqlite3.connect("alarms.db")
+connection = sqlite3.connect("alarmclock.db")
 
-# create the tables if they don't already exist
+# create the tables
 cursor = connection.cursor()
 cursor.executescript(schema)
 cursor.close()
 
-# insert some data
+# insert calendar data
 cursor = connection.cursor()
-cursor.execute("INSERT INTO alarm(theTime, startDate) VALUES ('04:45', '2022-08-26');")
-cursor.execute("INSERT INTO alarm(theTime, startDate) VALUES ('15:00', '2022-09-01');")
+
+today = date.today()
+firstDayOfTheYear = date(today.year, 1, 1)
+lastDayOfNextYear = date(today.year + 1, 12, 31)
+
+theDate = firstDayOfTheYear
+aDay = timedelta(days = 1)
+
+while (theDate <= lastDayOfNextYear):
+	
+	theDateS = theDate.strftime("%Y-%m-%d")
+	sql = "INSERT INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
+	print(sql)
+	cursor.execute(sql)
+	theDate = theDate + aDay
+
 connection.commit()
 cursor.close()
 
 # retrieve some data
-cursor = connection.cursor()
-cursor.execute('SELECT id, theTime, startDate, endDate, disabled FROM alarm');
+#cursor = connection.cursor()
+#cursor.execute('SELECT id, theTime, startDate, endDate, disabled FROM alarm');
 
-for row in cursor:
-    print(row[0], row[1], row[2], row[3], row[4]);
+#for row in cursor:
+#   print(row[0], row[1], row[2], row[3], row[4]);
 
-cursor.close()
-
+#cursor.close()
 
 connection.close()
