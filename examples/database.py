@@ -3,12 +3,6 @@ from datetime import date
 from datetime import timedelta
 
 schema = """
-			CREATE TABLE IF NOT EXISTS clock (
-				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-				theTime TIME NOT NULL
-			);
-			CREATE UNIQUE INDEX IF NOT EXISTS ix_clock_theTime ON clock (theTime);
-
 			CREATE TABLE IF NOT EXISTS calendar (
 				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 				theDate DATE NOT NULL,
@@ -28,19 +22,19 @@ schema = """
 
 			CREATE TABLE IF NOT EXISTS alarmSound (
 				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-				alarmId INT NOT NULL REFERENCES alarm(id),
+				alarmId INT NOT NULL REFERENCES alarm(id) ON DELETE CASCADE,
 				sound TEXT NOT NULL
 			);
 
 			CREATE TABLE IF NOT EXISTS weekDay (
 				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-				alarmId INT NOT NULL REFERENCES alarm(id),
+				alarmId INT NOT NULL REFERENCES alarm(id) ON DELETE CASCADE,
 				theDay INT NOT NULL
 			);
 
 			CREATE TABLE IF NOT EXISTS skip (
 				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-				alarmId INT NOT NULL REFERENCES alarm(id),
+				alarmId INT NOT NULL REFERENCES alarm(id) ON DELETE CASCADE,
 				theDate DATETIME NOT NULL
 			);
 		"""
@@ -54,7 +48,6 @@ cursor = connection.cursor()
 cursor.executescript(schema)
 cursor.close()
 
-
 def addYears(d, years):
 
 	newDate = d
@@ -67,6 +60,34 @@ def addYears(d, years):
 		
 	return newDate
 
+cursor = connection.cursor()
+
+# remove records older than a year
+sql = "DELETE FROM CALENDAR WHERE theDate < DATE('NOW', 'LOCALTIME', '-1 YEAR')"
+cursor.execute(sql)
+sql = "DELETE FROM alarm WHERE endDate < DATE('NOW', 'LOCALTIME', '-1 YEAR')"
+cursor.execute(sql)
+
+today = date.today()
+thisDayLastYear = addYears(today, -1)
+lastDayOfNextYear = date(today.year + 1, 12, 31)
+aDay = timedelta(days = 1)
+
+theDate = thisDayLastYear
+aDay = timedelta(days = 1)
+
+# insert calendar records to contain a list of dates from 1 year ago today to the last day of next year
+while (theDate <= lastDayOfNextYear):
+	
+	theDateS = theDate.strftime("%Y-%m-%d")
+	sql = "INSERT OR IGNORE INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
+	cursor.execute(sql)
+	theDate = theDate + aDay
+
+connection.commit()
+cursor.close()
+
+
 # check for calendar data
 cursor = connection.cursor()
 sql = "SELECT MIN(thedate) minDate, MAX(theDate) maxDate FROM calendar;"
@@ -74,54 +95,6 @@ recordset = cursor.execute(sql)
 minDate, maxDate = recordset.fetchone()
 cursor.close()
 
-today = date.today()
-thisDayLastYear = addYears(today, -1)
-lastDayOfNextYear = date(today.year + 1, 12, 31)
-
-print(f"The lowest date is {lastYear!r}, the highestDate is {lastDayOfNextYear}")
-
-if minDate is None:
-	pass
-	print("Calendar is empty")
-	
-else:
-	print(f"The lowest date is {minDate!r}, the highestDate is {maxDate}")
-
-
-# step one, delete everything prior to one year ago
-# step two, insert starting with 
-
-
-
-
-# insert calendar data
-# cursor = connection.cursor()
-
-# today = date.today()
-# firstDayOfTheYear = date(today.year, 1, 1)
-# lastDayOfNextYear = date(today.year + 1, 12, 31)
-
-# theDate = firstDayOfTheYear
-# aDay = timedelta(days = 1)
-
-# while (theDate <= lastDayOfNextYear):
-	
-	# theDateS = theDate.strftime("%Y-%m-%d")
-	# sql = "INSERT INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
-	# print(sql)
-	# cursor.execute(sql)
-	# theDate = theDate + aDay
-
-# connection.commit()
-# cursor.close()
-
-# retrieve some data
-#cursor = connection.cursor()
-#cursor.execute('SELECT id, theTime, startDate, endDate, disabled FROM alarm');
-
-#for row in cursor:
-#   print(row[0], row[1], row[2], row[3], row[4]);
-
-#cursor.close()
+print(f"The lowest date is {minDate!r}, the highestDate is {maxDate}")
 
 connection.close()
