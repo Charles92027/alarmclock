@@ -45,7 +45,7 @@ schema = """
 			);
 		"""
 
-print(schema);
+#print(schema);
 
 connection = sqlite3.connect("alarmclock.db")
 
@@ -54,26 +54,66 @@ cursor = connection.cursor()
 cursor.executescript(schema)
 cursor.close()
 
-# insert calendar data
+
+def addYears(d, years):
+
+	newDate = d
+
+	try:
+		newDate = d.replace(year = d.year + years)
+
+	except ValueError:
+		newDate = d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
+		
+	return newDate
+
+# check for calendar data
 cursor = connection.cursor()
+sql = "SELECT MIN(thedate) minDate, MAX(theDate) maxDate FROM calendar;"
+recordset = cursor.execute(sql)
+minDate, maxDate = recordset.fetchone()
+cursor.close()
 
 today = date.today()
-firstDayOfTheYear = date(today.year, 1, 1)
+thisDayLastYear = addYears(today, -1)
 lastDayOfNextYear = date(today.year + 1, 12, 31)
 
-theDate = firstDayOfTheYear
-aDay = timedelta(days = 1)
+print(f"The lowest date is {lastYear!r}, the highestDate is {lastDayOfNextYear}")
 
-while (theDate <= lastDayOfNextYear):
+if minDate is None:
+	pass
+	print("Calendar is empty")
 	
-	theDateS = theDate.strftime("%Y-%m-%d")
-	sql = "INSERT INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
-	print(sql)
-	cursor.execute(sql)
-	theDate = theDate + aDay
+else:
+	print(f"The lowest date is {minDate!r}, the highestDate is {maxDate}")
 
-connection.commit()
-cursor.close()
+
+# step one, delete everything prior to one year ago
+# step two, insert starting with 
+
+
+
+
+# insert calendar data
+# cursor = connection.cursor()
+
+# today = date.today()
+# firstDayOfTheYear = date(today.year, 1, 1)
+# lastDayOfNextYear = date(today.year + 1, 12, 31)
+
+# theDate = firstDayOfTheYear
+# aDay = timedelta(days = 1)
+
+# while (theDate <= lastDayOfNextYear):
+	
+	# theDateS = theDate.strftime("%Y-%m-%d")
+	# sql = "INSERT INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
+	# print(sql)
+	# cursor.execute(sql)
+	# theDate = theDate + aDay
+
+# connection.commit()
+# cursor.close()
 
 # retrieve some data
 #cursor = connection.cursor()
