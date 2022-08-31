@@ -4,6 +4,7 @@ from clock import clockFace
 from buttons import bigButton
 from buttons import littleButton
 from flask import Flask
+from database import database
 
 bigButton.flash(5)
 clockFace.address()
@@ -15,6 +16,8 @@ done = False
 def waitLoop():
 	global done
 	while done == False:
+		# if it's 1 am, database.maintenance()
+		# if it's the top of the minute, check for an alarm
 		time.sleep(.5)
 
 waitThread = threading.Thread(target = waitLoop)

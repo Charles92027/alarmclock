@@ -1,5 +1,7 @@
 import sqlite3
 import util
+from datetime import date
+from datetime import timedelta
 
 class Database:
 
@@ -67,7 +69,7 @@ class Database:
 		cursor.execute(sql)
 
 		today = date.today()
-		thisDayLastYear = addYears(today, -1)
+		thisDayLastYear = util.addYears(today, -1)
 		lastDayOfNextYear = date(today.year + 1, 12, 31)
 		aDay = timedelta(days = 1)
 
