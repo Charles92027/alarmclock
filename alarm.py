@@ -3,6 +3,7 @@ from database import database
 from buttons import bigButton
 from datetime import datetime
 from enum import Enum
+from sounds import player
 
 class AlarmState(Enum):
 	QUIET = 0
@@ -15,6 +16,7 @@ class Alarm:
 	stateThread = None
 	
 	lastAlarmId = None
+	lastAlarmDateTime = None
 	
 	nextAlarmId = None
 	nextAlarmDate = None
@@ -33,15 +35,16 @@ class Alarm:
 	
 		print("alarm state State = ", self.state)
 		
+		player.stop()
 		startTicking = 0
 	
 		while(self.state == AlarmState.QUIET):
 			
 			time.sleep(.1)
 		
-			#reload the data every 5 minutes
+			#reload the data every minute
 			elapsed = time.time() - startTicking
-			if elapsed > 300:
+			if elapsed > 60:
 				recordset = database.getNextAlarm()
 				if recordset is not None:
 					self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound = recordset
@@ -49,16 +52,14 @@ class Alarm:
 					print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
 				startTicking = time.time()
 
-			if self.lastAlarmId != self.nextAlarmId:
+			if self.lastAlarmDateTime != self.nextAlarmDateTime:
 
 				rightNow = datetime.now()
 				interval = rightNow - self.nextAlarmDateTime
 				interMinutes = interval.total_seconds() / 60
 
-				if interMinutes > 0:
-					self.lastAlarmId = self.nextAlarmId
-					print("ALARMING")
-					#self.state = AlarmState.ALARM
+				if interMinutes >= 0:
+					self.state = AlarmState.ALARM
 
 		self.nextState()
 
@@ -66,36 +67,52 @@ class Alarm:
 
 		print("alarm state State = ", self.state)
 	
-		# start music playing
+		self.lastAlarmDateTime = self.nextAlarmDateTime
+		startTicking = time.time()
 	
+		# a button press will change the state back to quiet			
 		while(self.state == AlarmState.ALARM):
+
+			if player.playng() == False:
+				player.play(nextAlarmSound)
+
 			bigButton.flash(1)	# this replaces our timer
-			# a button press will change the state back to quiet
-			# if too much time has passed since the alarm started, trnasition to the ESCALATION state
-		
+			
+			# if too much time has passed since the alarm started, transition to the ESCALATION state
+			elapsed = time.time() - startTicking
+			if elapsed > 120:			
+				self.state == AlarmState.ESCALATION
+
 		self.nextState()
 
 	def escalationState(self):
 
 		print("alarm state State = ", self.state)
 	
-		# stop the 
+		# do something big here
+		# increase the volume, flash the display
 	
 		while(self.state == AlarmState.ALARM):
-			time.sleep(.1)
+			bigButton.flash(1)	# this replaces our timer
 			# a button press will change the state back to quiet
-			# if too much time has passed since the alarm started, trnasition to the ESCALATION state
 		
 		self.nextState()
 
+	def bigButtonPressed(self):
+		
+		if self.state == AlarmState.ALARM or self.state == AlarmState.ESCALATION:
+			self.state = AlarmState.QUIET
+
+		else:
+			pass
+			# if an alarm is due within the next 60 minutes then 
+			# wait until the button has been held for 5 seconds then
+			# flash the button three times
+			# and clear the next alarm
 
 	def nextState(self):
 	
-		if self.state == AlarmState.QUIET:
-			self.stateThread = threading.Thread(target = self.quietState)
-			self.stateThread.start()
-			
-		elif self.state == AlarmState.ALARM:
+		if self.state == AlarmState.ALARM:
 			self.stateThread = threading.Thread(target = self.alarmState)
 			self.stateThread.start()
 	
@@ -103,6 +120,7 @@ class Alarm:
 			self.stateThread = threading.Thread(target = self.escalationState)
 			self.stateThread.start()
 
+		#if self.state == AlarmState.QUIET:
 		else:
 			self.stateThread = threading.Thread(target = self.quietState)
 			self.stateThread.start()

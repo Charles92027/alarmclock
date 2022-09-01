@@ -1,7 +1,5 @@
 import time, RPi.GPIO as GPIO
 from clock import clockFace
-#from alarm import alarm
-
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
