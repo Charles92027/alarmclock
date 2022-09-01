@@ -82,6 +82,11 @@ while (theDate <= lastDayOfNextYear):
 	theDateS = theDate.strftime("%Y-%m-%d")
 	sql = "INSERT OR IGNORE INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
 	cursor.execute(sql)
+	
+	######## This is super important
+	last_row_id = cur.lastrowid
+	
+	
 	theDate = theDate + aDay
 
 connection.commit()

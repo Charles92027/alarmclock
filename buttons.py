@@ -1,5 +1,7 @@
 import time, RPi.GPIO as GPIO
 from clock import clockFace
+#from alarm import alarm
+
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -36,6 +38,9 @@ class BigButton:
 		if GPIO.input(channel) == GPIO.HIGH:
 		
 			print("big button pressed")
+			
+			# send the button press signal to the alarm object
+			
 			clockFace.chase()
 
 			while GPIO.input(channel) == GPIO.HIGH:

@@ -5,6 +5,8 @@ from buttons import bigButton
 from buttons import littleButton
 from flask import Flask
 from database import database
+from alarm import alarm
+
 
 bigButton.flash(5)
 clockFace.address()

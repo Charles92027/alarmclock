@@ -24,16 +24,11 @@ class Database:
 						theTime TIME NOT NULL,
 						startDate DATE NOT NULL DEFAULT CURRENT_DATE,
 						endDate DATE NOT NULL,
+						sound TEXT NOT NULL,
 						disabled BIT DEFAULT FALSE
 					);
 					CREATE INDEX IF NOT EXISTS ix_alarm_startDate ON alarm (startDate);
 					CREATE INDEX IF NOT EXISTS ix_alarm_endDate ON alarm (endDate);
-
-					CREATE TABLE IF NOT EXISTS alarmSound (
-						id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-						alarmId INT NOT NULL REFERENCES alarm(id) ON DELETE CASCADE,
-						sound TEXT NOT NULL
-					);
 
 					CREATE TABLE IF NOT EXISTS weekDay (
 						id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -92,12 +87,13 @@ class Database:
 	def getNextAlarm(self):
 	
 		sql = """
-			SELECT x.id, x.theDate, x.theTime, x.theDateTime FROM (
+			SELECT x.id, x.theDate, x.theTime, x.theDateTime, x.sound FROM (
 				SELECT
 					alarm.id,
 					calendar.theDate,
 					alarm.theTime,
-					DATETIME(calendar.theDate, alarm.theTime) theDateTime
+					DATETIME(calendar.theDate, alarm.theTime) theDateTime,
+					alarm.sound
 				FROM alarm
 					JOIN weekDay
 						ON alarm.id = weekDay.alarmId
@@ -113,7 +109,8 @@ class Database:
 					alarm.id,
 					calendar.theDate,
 					alarm.theTime,
-					DATETIME(calendar.theDate, alarm.theTime) theDateTime
+					DATETIME(calendar.theDate, alarm.theTime) theDateTime,
+					alarm.sound
 				FROM alarm
 					LEFT JOIN weekDay
 						ON alarm.id = weekDay.alarmId
@@ -130,17 +127,22 @@ class Database:
 					ON x.id = skip.alarmId
 					AND x.theDate = skip.theDate
 			WHERE skip.id IS NULL
-			AND x.theDateTime = DATETIME(STRFTIME('%Y-%m-%d %H:%M', DATETIME('NOW', 'LOCALTIME')));
+			AND x.theDateTime >= DATETIME('NOW', 'LOCALTIME')
+			ORDER BY x.theDateTime
+			LIMIT 1;
 			"""
 
 		connection = sqlite3.connect("alarmclock.db")
 
 		cursor = connection.cursor()
-		recordset = cursor.execute(sql)
-		minDate, maxDate = recordset.fetchone()
+		cursor.execute(sql)
+		recordset = cursor.fetchone()
 		cursor.close()
 
 		connection.close()
+
+		return recordset
+
 
 
 database = Database()
