@@ -37,18 +37,21 @@ class BigButton:
 		
 			print("big button pressed")
 			
+			import alarm
+			alarm.alarm.bigButtonPressed();
+			
 			# send the button press signal to the alarm object
 			
-			clockFace.chase()
+			#clockFace.chase()
 
-			while GPIO.input(channel) == GPIO.HIGH:
-				pass
+			#while GPIO.input(channel) == GPIO.HIGH:
+			#	pass
 
-			clockFace.time()
+			#clockFace.time()
 
-			print("big button released")
+			#print("big button released")
 
-			self.flash(2)
+			#self.flash(2)
 
 
 class LittleButton:
@@ -80,3 +83,4 @@ class LittleButton:
 		
 bigButton = BigButton()
 littleButton = LittleButton()
+
