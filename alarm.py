@@ -50,7 +50,7 @@ class Alarm:
 				if recordset is not None:
 					self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound = recordset
 					self.nextAlarmDateTime = xTime = datetime.strptime(self.nextAlarmDateTime, "%Y-%m-%d %H:%M:%S")
-					print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
+					#print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
 				startTicking = time.time()
 
 			if self.lastAlarmDateTime != self.nextAlarmDateTime:
@@ -74,7 +74,7 @@ class Alarm:
 		# a button press will change the state back to quiet			
 		while(self.state == AlarmState.ALARM):
 
-			if player.playng() == False:
+			if player.playing() == False:
 				player.play(nextAlarmSound)
 
 			buttons.bigButton.flash(1)	# this replaces our timer
