@@ -1,4 +1,5 @@
 import time, RPi.GPIO as GPIO
+import alarm
 from clock import clockFace
 
 GPIO.setwarnings(False)
@@ -36,21 +37,18 @@ class BigButton:
 		if GPIO.input(channel) == GPIO.HIGH:
 		
 			print("big button pressed")
-			
-			import alarm
 			alarm.alarm.bigButtonPressed();
 			
 			# send the button press signal to the alarm object
 			
 			#clockFace.chase()
 
-			#while GPIO.input(channel) == GPIO.HIGH:
-			#	pass
+			while GPIO.input(channel) == GPIO.HIGH:
+				pass
 
 			#clockFace.time()
 
-			#print("big button released")
-
+			print("big button released")
 			#self.flash(2)
 
 

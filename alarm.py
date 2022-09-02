@@ -1,9 +1,10 @@
 import time, threading
-from database import database
-from buttons import bigButton
 from datetime import datetime
 from enum import Enum
 from sounds import player
+
+from database import database
+import buttons
 
 class AlarmState(Enum):
 	QUIET = 0
@@ -76,12 +77,13 @@ class Alarm:
 			if player.playng() == False:
 				player.play(nextAlarmSound)
 
-			bigButton.flash(1)	# this replaces our timer
+			buttons.bigButton.flash(1)	# this replaces our timer
 			
 			# if too much time has passed since the alarm started, transition to the ESCALATION state
 			elapsed = time.time() - startTicking
-			if elapsed > 120:			
-				self.state == AlarmState.ESCALATION
+			if elapsed > 120:
+				pass
+				#self.state == AlarmState.ESCALATION
 
 		self.nextState()
 
