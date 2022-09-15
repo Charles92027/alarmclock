@@ -37,6 +37,7 @@ class Alarm:
 		print("alarm state State = ", self.state)
 		
 		player.stop()
+		player.play("silence.mp3")		# player.stop isn't working for some reason
 		startTicking = 0
 	
 		while(self.state == AlarmState.QUIET):
@@ -50,7 +51,7 @@ class Alarm:
 				if recordset is not None:
 					self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound = recordset
 					self.nextAlarmDateTime = xTime = datetime.strptime(self.nextAlarmDateTime, "%Y-%m-%d %H:%M:%S")
-					#print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
+					print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
 				startTicking = time.time()
 
 			if self.lastAlarmDateTime != self.nextAlarmDateTime:
@@ -75,7 +76,7 @@ class Alarm:
 		while(self.state == AlarmState.ALARM):
 
 			if player.playing() == False:
-				player.play(nextAlarmSound)
+				player.play(self.nextAlarmSound)
 
 			buttons.bigButton.flash(1)	# this replaces our timer
 			

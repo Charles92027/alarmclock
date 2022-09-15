@@ -42,11 +42,11 @@ class Player:
 		self.playThread = threading.Thread(target = self.whilePlaying)
 		self.playThread.start()
 
+	def playing(self):
+		return mixer.music.get_busy()
+	
 	def stop(self):
 		mixer.stop();
-	
-	def playng(self):
-		return mixer.music.get_busy()
 	
 	def whilePlaying(self):
 		while mixer.music.get_busy():
