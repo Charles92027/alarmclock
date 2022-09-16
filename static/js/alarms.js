@@ -17,8 +17,11 @@ function loadAlarmsList() {
 			let newRow = alarmsTable.insertRow(-1);
 
 			let newCell = newRow.insertCell(0);
+			let newAnchor = document.createElement("a");
+			newAnchor.href = "/alarm/" + alarm.id
 			let newText = document.createTextNode(alarm.id);
-			newCell.appendChild(newText);
+			newAnchor.appendChild(newText);
+			newCell.appendChild(newAnchor);
 
 			newCell = newRow.insertCell(1);
 			newText = document.createTextNode(alarm.theTime);

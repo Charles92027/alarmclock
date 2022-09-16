@@ -7,9 +7,9 @@ from flask import Flask
 from database import database
 from alarm import alarm
 
-bigButton.flash(5)
-clockFace.address()
-time.sleep(.5)
+#bigButton.flash(5)
+#clockFace.address()
+#time.sleep(.5)
 clockFace.time()
 
 done = False

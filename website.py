@@ -25,3 +25,11 @@ def listAlarms():
 	response = database.listAlarms()
 	return(response)
 
+@app.route("/alarm/<id>")
+def editAlarm(id):
+	return render_template("alarm.html", id = id)
+
+@app.route("/alarm/<id>", methods=['POST'])
+def updateAlarm():
+
+	pass

@@ -197,6 +197,33 @@ class Database:
 		print(jsonResult)
 
 		return jsonResult	
+	
+	def getAlarm(id):
+		sql = """
+			SELECT DISTINCT
+				alarm.id,
+				alarm.theTime,
+				alarm.startDate,
+				alarm.endDate,
+				alarm.sound,
+				alarm.enabled
+			FROM alarm
+			WHERE alarm.id={};
+		""".format(id);
+
+		connection = sqlite3.connect("alarmclock.db")
+
+		cursor = connection.cursor()
+		row = cursor.execute(sql).fetchone()
 		
+		jsonElement = '{{"id":"{}","theTime":"{}","startDate":"{}","endDate":"{}","sound":"{}","enabled":"{}"}}'.format(row[0], row[1], row[2], row[3], row[4], row[5])
+
+		cursor.close()
+		connection.close()
+
+		print(jsonResult)
+
+		return jsonResult	
+	
 
 database = Database()
