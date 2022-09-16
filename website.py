@@ -3,6 +3,7 @@ from flask import render_template
 from alarmclock import app
 import sounds
 from sounds import player
+from database import database
 
 @app.route("/")
 def index():
@@ -17,3 +18,10 @@ def playSound(sound):
 
 	player.play(sound)
 	return(sound)
+
+@app.route("/alarms/")
+def listAlarms():
+
+	response = database.listAlarms()
+	return(response)
+

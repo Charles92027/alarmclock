@@ -128,5 +128,4 @@ class Alarm:
 			self.stateThread = threading.Thread(target = self.quietState)
 			self.stateThread.start()
 
-
 alarm = Alarm()

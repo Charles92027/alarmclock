@@ -1,5 +1,6 @@
 import sqlite3
 import util
+import datetime
 from datetime import date
 from datetime import timedelta
 
@@ -25,7 +26,7 @@ class Database:
 						startDate DATE NOT NULL DEFAULT CURRENT_DATE,
 						endDate DATE NOT NULL,
 						sound TEXT NOT NULL,
-						disabled BIT DEFAULT FALSE
+						enabled BIT DEFAULT TRUE
 					);
 					CREATE INDEX IF NOT EXISTS ix_alarm_startDate ON alarm (startDate);
 					CREATE INDEX IF NOT EXISTS ix_alarm_endDate ON alarm (endDate);
@@ -103,7 +104,7 @@ class Database:
 						AND calendar.theDate >= DATE('NOW', 'LOCALTIME')
 						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+1 DAY')
 						AND weekDay.theDay = calendar.theDay
-				WHERE alarm.disabled = FALSE
+				WHERE alarm.enabled = TRUE
 				UNION
 				SELECT
 					alarm.id,
@@ -119,7 +120,7 @@ class Database:
 						AND alarm.endDate >= calendar.theDate
 						AND calendar.theDate >= DATE('NOW', 'LOCALTIME')
 						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+1 DAY')
-				WHERE alarm.disabled = FALSE
+				WHERE alarm.enabled = TRUE
 				AND weekDay.ID IS NULL
 
 			) AS x
@@ -143,6 +144,59 @@ class Database:
 
 		return recordset
 
+	def listAlarms(self):
+	
+		sql = """
+			SELECT DISTINCT
+				alarm.id,
+				alarm.theTime,
+				alarm.startDate,
+				alarm.endDate,
+				alarm.sound,
+				alarm.enabled
+			FROM alarm
+			ORDER BY alarm.id;
+		"""
 
+		connection = sqlite3.connect("alarmclock.db")
+
+		cursor = connection.cursor()
+		recordset = cursor.execute(sql)
+		
+		jsonResult = "["
+		jsonElement = ""
+		comma = ""
+		oldId = 0
+		
+		row = recordset.fetchone()
+		while row != None:
+		
+			id, theTime, startDate, endDate, sound, enabled = row
+			
+			#theTime = datetime.strptime(theTime).strftime("%-I:%M")
+
+			#if startDate == endDate:
+			#	endDate = datetime.strptime(endDate).strftime("%m/%d/%Y")
+			#else:
+			#	endDate = ""
+
+			#startDate = datetime.strptime(startDate).strftime("%m/%d/%Y")
+			
+			jsonElement = '{{"id":"{}","theTime":"{}","startDate":"{}","endDate":"{}","sound":"{}","enabled":"{}"}}'.format(id, theTime, startDate, endDate, sound, enabled)
+			jsonResult = jsonResult + comma + jsonElement
+			comma = ","
+			
+			row = recordset.fetchone()
+		
+		cursor.close()
+
+		connection.close()
+
+		jsonResult += "]"
+
+		print(jsonResult)
+
+		return jsonResult	
+		
 
 database = Database()

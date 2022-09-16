@@ -84,7 +84,7 @@ while (theDate <= lastDayOfNextYear):
 	cursor.execute(sql)
 	
 	######## This is super important
-	last_row_id = cur.lastrowid
+	last_row_id = cursor.lastrowid
 	
 	
 	theDate = theDate + aDay
@@ -101,5 +101,19 @@ minDate, maxDate = recordset.fetchone()
 cursor.close()
 
 print(f"The lowest date is {minDate!r}, the highestDate is {maxDate}")
+
+
+cursor = connection.cursor()
+sql = "SELECT id, theDate, theDay FROM calendar LIMIT 10;"
+recordset = cursor.execute(sql)
+
+row = recordset.fetchone()
+
+while row != None:
+	id, theDate, theDay = row
+	print(f"{id}, {theDate}, {theDay}")
+	row = recordset.fetchone()
+
+cursor.close()
 
 connection.close()
