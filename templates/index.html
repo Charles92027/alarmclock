@@ -1,63 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Alarm Clock</title>
-		<link rel="icon" href="data:;base64,iVBORwOKGO=" />
-		<link rel="stylesheet" href="{{ url_for('static', filename='style/style.css')}}">
-		<link rel="stylesheet" href="{{ url_for('static', filename='style/clock.css')}}">
-	</head>
-	<body id="body">
-		<script type="text/javascript" src="{{ url_for('static', filename='js/utility.js')}}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/clock.js')}}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/alarms.js')}}"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/sounds.js')}}"></script>
+{% extends 'base.html' %}
 
-		<table id="indexTable">
+{% block primaryContent %}
+
+	<table>
+		{% for alarm in alarmList %}
 			<tr>
-				<td id="systemCell">
-					<table id="systemTable">
-						<tr>
-							<td id="clockCell">
-								<div id="clockFace" class="dayFace">
-									<div id="hourHand" class="dayHand"></div>
-									<div id="minuteHand" class="dayHand"></div>
-									<div id="secondHand" class="dayHand"></div>
-								</div>
-							</td>
-							<td>
-								<table id="configurationTable">
-									<tr>
-										<td>Next Alarm:</td>
-										<td>00:00</td>
-									</tr>
-									<tr>
-										<td>Time Zone:</td>
-										<td>Los Angeles</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
-				</td>
+				<td><a href="alarm/{{alarm['id']}}">{{alarm['id']}}</td>
+				<td><a href="alarm/{{alarm['id']}}">{{alarm['theTime']}}</td>
+				<td><a href="alarm/{{alarm['id']}}">{{alarm['startDate']}}</td>
+				<td><a href="alarm/{{alarm['id']}}">{{alarm['endDate']}}</td>
+				<td><a href="alarm/{{alarm['id']}}">{{alarm['sound']}}</td>
+				<td><a href="alarm/{{alarm['id']}}">{{alarm['enabled']}}</td>
 			</tr>
-			<tr>
-				<td id="alarmCell">
-					<table id="alarmsTable">
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td id="soundsCell">
-					<table id="soundsTable">
-					</table>
-				</td>
-			</tr>
-		</table>
-	</body>
-	<script type="text/javascript">
-		loadAlarmsList();
-		loadSoundsList();
-	</script>
+		{% endfor %}
+	</table>
 	
-</html>
+{% endblock %}
+{% block secondaryContent %}
+
+	<table>
+		{% for sound in soundList %}
+			<tr><td>
+				<span onClick='playSound("{{sound}}")'>
+					{{ sound }}
+				</span>			
+			</td></tr>
+		{% endfor %}
+	</table>
+
+{% endblock %}

@@ -3,33 +3,22 @@ from flask import render_template
 from alarmclock import app
 import sounds
 from sounds import player
-from database import database
+import database
 
 @app.route("/")
 def index():
-	return render_template("index.html")
 
-@app.route("/sounds/")
-def listSounds():
-	return(sounds.listSounds())
+	db = database.get_db_for_web()
+	alarms = db.execute(
+		"SELECT DISTINCT"
+		" alarm.id, alarm.theTime, alarm.startDate, alarm.endDate, alarm.sound, alarm.enabled"
+		" FROM alarm ORDER BY alarm.id;"
+	).fetchall()
+
+	return render_template("index.html", alarmList = alarms, soundList = sounds.listSounds())
 
 @app.route("/sounds/<sound>/play")
 def playSound(sound):
 
 	player.play(sound)
 	return(sound)
-
-@app.route("/alarms/")
-def listAlarms():
-
-	response = database.listAlarms()
-	return(response)
-
-@app.route("/alarm/<id>")
-def editAlarm(id):
-	return render_template("alarm.html", id = id)
-
-@app.route("/alarm/<id>", methods=['POST'])
-def updateAlarm():
-
-	pass

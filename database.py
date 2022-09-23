@@ -4,6 +4,24 @@ import datetime
 from datetime import date
 from datetime import timedelta
 
+from flask import current_app
+from flask import g
+
+
+def get_db_for_web():
+    """Connect to the application's configured database. The connection
+    is unique for each request and will be reused if this is called
+    again.
+    """
+    if "db" not in g:
+        g.db = sqlite3.connect(
+            "alarmclock.db", detect_types=sqlite3.PARSE_DECLTYPES
+        )
+        g.db.row_factory = sqlite3.Row
+
+    return g.db
+
+
 class Database:
 
 	def __init__(self):
