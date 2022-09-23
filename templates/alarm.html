@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block primaryContent %}
+	<form method="POST">
+
+		<input type="hidden" id="alarmId" name="alarmId" value="{{alarm['id']}}" />
+
+		<table>
+			<tr>
+				<td>time:</td>
+				<td><input type="text" id="theTime" name="theTime" value="{{alarm['theTime']}}" /></td>
+			</tr>
+			<tr>
+				<td>startDate:</td>
+				<td><input type="text" id="startDate" name="startDate" value="{{alarm['startDate']}}" /></td>
+			</tr>
+			<tr>
+				<td>endDate:</td>
+				<td><input type="text" id="endDate" name="endDate" value="{{alarm['endDate']}}" /></td>
+			</tr>
+			<tr>
+				<td>sound:</td>
+				<td>
+					<select id="sound" name="sound">
+						{% for sound in soundList %}
+							<option value="{{sound}}"
+								{% if sound == alarm['sound'] %}
+									selected
+								{% endif %}								
+							>
+								{{sound}}
+							</option>
+						{% endfor %}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>enabled:</td>
+				<td><input type="checkbox" id="enabled" name="enabled" value="1"
+					{% if alarm['enabled'] %}
+						checked
+					{% endif %}
+					/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="save" />
+{% endblock %}
+{% block secondaryContent %}
+
+
+	
+	</form>
+{% endblock %}
