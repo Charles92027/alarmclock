@@ -8,15 +8,15 @@
 		<table>
 			<tr>
 				<td>time:</td>
-				<td><input type="text" id="theTime" name="theTime" value="{{alarm['theTime']}}" /></td>
+				<td><input type="time" id="theTime" name="theTime" value="{{alarm['theTime']}}" required /></td>
 			</tr>
 			<tr>
 				<td>startDate:</td>
-				<td><input type="text" id="startDate" name="startDate" value="{{alarm['startDate']}}" /></td>
+				<td><input type="date" id="startDate" name="startDate" value="{{alarm['startDate']}}" required /></td>
 			</tr>
 			<tr>
 				<td>endDate:</td>
-				<td><input type="text" id="endDate" name="endDate" value="{{alarm['endDate']}}" /></td>
+				<td><input type="date" id="endDate" name="endDate" value="{{alarm['endDate']}}" required /></td>
 			</tr>
 			<tr>
 				<td>sound:</td>
