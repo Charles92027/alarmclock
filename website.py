@@ -6,6 +6,7 @@ from alarmclock import app
 import sounds
 from sounds import player
 import database
+from datetime import datetime
 
 @app.route("/")
 def index():
@@ -23,6 +24,9 @@ def index():
 def editAlarm(id):
 
 	if request.method == "POST":
+	
+		print("weekDays", request.form["weekDay"])
+	
 		alarmId = request.form["alarmId"]
 		theTime = request.form["theTime"]
 		startDate = request.form["startDate"]
@@ -44,7 +48,31 @@ def editAlarm(id):
 		" FROM alarm WHERE alarm.id = {};".format(id)
 	).fetchone()
 
-	return render_template("alarm.html", alarm = alarm, soundList = sounds.listSounds())
+	weekDays = db.execute(
+		"SELECT alarmId, theDay, checked FROM ("
+		"SELECT weekDay.alarmId, weekDay.theDay, 'checked' checked"
+		" FROM weekDay"
+		" WHERE alarmid = {0}"
+		" UNION SELECT blanks.alarmid, blanks.theDay, blanks.checked "
+		"FROM ("
+		" SELECT {0} alarmid, 0 theDay, '' checked "
+		" UNION SELECT {0} alarmid, 1 theDay, '' checked "
+		" UNION SELECT {0} alarmid, 2 theDay, '' checked "
+		" UNION SELECT {0} alarmid, 3 theDay, '' checked "
+		" UNION SELECT {0} alarmid, 4 theDay, '' checked "
+		" UNION SELECT {0} alarmid, 5 theDay, '' checked "
+		" UNION SELECT {0} alarmid, 6 theDay, '' checked "
+		") blanks "
+		" LEFT JOIN weekDay "
+		" ON blanks.alarmId = weekDay.alarmId "
+		" AND blanks.theDay = weekDay.theDay "
+		" WHERE weekDay.id IS NULL "
+		") weekDays"
+		" ORDER BY theDay;".format(id)
+	).fetchall()
+
+	
+	return render_template("alarm.html", alarm = alarm, weekDays=weekDays, soundList = sounds.listSounds())
 
 @app.route("/alarm/new", methods=("GET", "POST"))
 def newAlarm():
@@ -64,8 +92,20 @@ def newAlarm():
 		db.commit()
 		return redirect("/")
 
+	db = database.get_db_for_web()
+
+	weekDays = db.execute(
+		" SELECT 0 alarmid, 0 theDay, '' checked "
+		" UNION SELECT 0 alarmid, 1 theDay, '' checked "
+		" UNION SELECT 0 alarmid, 2 theDay, '' checked "
+		" UNION SELECT 0 alarmid, 3 theDay, '' checked "
+		" UNION SELECT 0 alarmid, 4 theDay, '' checked "
+		" UNION SELECT 0 alarmid, 5 theDay, '' checked "
+		" UNION SELECT 0 alarmid, 6 theDay, '' checked "
+	).fetchall()
+
 	alarm = {'id': 0}
-	return render_template("alarm.html", alarm = alarm, soundList = sounds.listSounds())
+	return render_template("alarm.html", alarm = alarm, weekDays=weekDays, soundList = sounds.listSounds())
 
 
 @app.route("/sounds/<sound>/play")
@@ -73,3 +113,13 @@ def playSound(sound):
 
 	player.play(sound)
 	return(sound)
+
+
+@app.template_filter('strftime')
+def _filter_datetime(date, fmt=None):
+
+	if not fmt:
+		fmt = '%mmm %d, %yyyy'
+	
+	return date.strftime(fmt)
+

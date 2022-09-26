@@ -44,6 +44,16 @@
 				</td>
 			</tr>
 		</table>
+		<table>
+			<tr><td>Sunday</td><td>Monday</td><td>Tuesday</td><td>Wednesday</td><td>Thursday</td><td>Friday</td><td>Saturday</td></tr>
+			<tr>
+				{% for weekDay in weekDays %}
+					<td>
+						<input type="checkbox" name="weekDay" value="{{weekDay['theDay']}}" {{weekDay['checked']}} />
+					</td>
+				{% endfor %}
+			</tr>
+		</table>
 		<input type="submit" value="save" />
 {% endblock %}
 {% block secondaryContent %}

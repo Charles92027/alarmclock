@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
-
 {% block primaryContent %}
 
 	<table>
 		{% for alarm in alarmList %}
 			<tr>
-				<td><a href="alarm/{{alarm['id']}}">{{alarm['id']}}</td>
 				<td><a href="alarm/{{alarm['id']}}">{{alarm['theTime']}}</td>
-				<td><a href="alarm/{{alarm['id']}}">{{alarm['startDate']}}</td>
-				<td><a href="alarm/{{alarm['id']}}">{{alarm['endDate']}}</td>
+				<td><a href="alarm/{{alarm['id']}}">{{alarm['startDate']|strftime('%b %-d, %Y')}}</td>
+				<td>
+					{% if alarm['startDate'] != alarm['endDate'] %}
+						<a href="alarm/{{alarm['id']}}">{{alarm['endDate']|strftime('%b %-d, %Y')}}
+					{% endif %}
+				</td>
 				<td><a href="alarm/{{alarm['id']}}">{{alarm['sound']}}</td>
 				<td><a href="alarm/{{alarm['id']}}">{{alarm['enabled']}}</td>
 			</tr>
