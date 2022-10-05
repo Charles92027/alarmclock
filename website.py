@@ -25,19 +25,29 @@ def editAlarm(id):
 
 	if request.method == "POST":
 	
-		print("weekDays", request.form["weekDay"])
-	
 		alarmId = request.form["alarmId"]
 		theTime = request.form["theTime"]
 		startDate = request.form["startDate"]
 		endDate = request.form["endDate"]
 		sound = request.form["sound"]
 		enabled = request.form.get("enabled", 0)
+	
+		if request.form.get("weekDay", "") != "":
+			weekDay = request.form.getlist("weekDay")
+		else:
+			weekDay = []
+
 		db = database.get_db_for_web()
 		db.execute(
 			"UPDATE alarm SET theTime = ?, startDate = ?, endDate = ?, sound = ?, enabled = ? WHERE id = ?;",
 			(theTime, startDate, endDate, sound, enabled, alarmId)
 		)
+
+		db.execute("DELETE FROM weekDay WHERE alarmId = {0};".format(alarmId))
+
+		for wd in weekDay:
+			db.execute("INSERT INTO weekDay (alarmId, theDay) VALUES ({0}, {1});".format(alarmId, wd))
+
 		db.commit()
 		return redirect("/")
 
@@ -84,11 +94,18 @@ def newAlarm():
 		endDate = request.form["endDate"]
 		sound = request.form["sound"]
 		enabled = request.form.get("enabled", 0)
+		weekDay = request.form.get("weekDay", 0)
 		db = database.get_db_for_web()
 		db.execute(
 			"INSERT INTO alarm (theTime, startDate, endDate, sound, enabled) VALUES (?, ?, ?, ?, ?);",
 			(theTime, startDate, endDate, sound, enabled)
 		)
+		
+		if request.form.get("weekDay", "") != "":
+			weekDay = request.form.getlist("weekDay")
+			for wd in weekDay:
+				db.execute("INSERT INTO weekDay (alarmId, theDay) SELECT MAX(id), {0} FROM alarm;".format(wd))
+
 		db.commit()
 		return redirect("/")
 
