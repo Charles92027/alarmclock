@@ -7,6 +7,7 @@ import sounds
 from sounds import player
 import database
 from datetime import datetime
+from alarm import alarm
 
 @app.route("/")
 def index():
@@ -33,7 +34,8 @@ def now():
 		"day": now.day,
 		"hour": now.hour,
 		"minute": now.minute,
-		"second": now.second
+		"second": now.second,
+		"nextAlarm": alarm.nextAlarmDateTime.strftime("%A, %B %-d, %Y, %-I:%M %p")
 	}
 	return nowObject
 

@@ -1,5 +1,15 @@
 import time, RPi.GPIO as GPIO
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
+bigButtonLedPin = 16
+bigButtonPin = 25
+
+GPIO.setup(bigButtonLedPin, GPIO.OUT)
+GPIO.setup(bigButtonPin, GPIO.IN)
+
+
 def lightButton():
 	GPIO.output(bigButtonLedPin, GPIO.HIGH)
 
@@ -20,31 +30,18 @@ def pressed(channel):
 		print("big button pressed")
 	
 		while GPIO.input(channel) == GPIO.HIGH:
-			# while pressed display chasing lights
-			pass
+			flash(1)
 
 		print("big button released")
 
-		flash(2)
+		flash(4)
 
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-
-bigButtonLedPin = 16
-bigButtonPin = 25
-
-GPIO.setup(bigButtonLedPin, GPIO.OUT)
-GPIO.setup(bigButtonPin, GPIO.IN)
 
 GPIO.add_event_detect(bigButtonPin, GPIO.RISING, callback = pressed, bouncetime = 500)
 
 flash(5)
 print("big button initialized")
-
-
-
-
 message = input("press enter to quit")
 
 GPIO.cleanup()

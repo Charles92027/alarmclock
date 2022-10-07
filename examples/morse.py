@@ -1,6 +1,6 @@
 import time, RPi.GPIO as GPIO
 
-dotTime = .2
+dotTime = .1
 
 morseLetters = [
 	".-", "-...", "-.-.", "-..", ".",
@@ -10,8 +10,14 @@ morseLetters = [
 	"..-", "...-", ".--", "-..-", "-.--",
 	"--.."]
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
 bigButtonLedPin = 16
 bigButtonPin = 25
+
+GPIO.setup(bigButtonLedPin, GPIO.OUT)
+GPIO.setup(bigButtonPin, GPIO.IN)
 
 def lightButton():
 	GPIO.output(bigButtonLedPin, GPIO.HIGH)
@@ -36,7 +42,6 @@ def letterSpace():
 
 def wordSpace():
 	time.sleep(dotTime * 4)
-	
 	
 def pressed(channel):
 	
@@ -67,13 +72,6 @@ def pressed(channel):
 				letterSpace()
 			
 		wordSpace()
-
-
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-
-GPIO.setup(bigButtonLedPin, GPIO.OUT)
-GPIO.setup(bigButtonPin, GPIO.IN)
 
 GPIO.add_event_detect(bigButtonPin, GPIO.RISING, callback = pressed, bouncetime = 500)
 

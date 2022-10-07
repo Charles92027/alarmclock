@@ -59,6 +59,9 @@ setInterval(() => {
 		let j = JSON.parse(response);
 		const theDate = new Date(j.now);
 		drawClock(theDate)
+		$("nextAlarm").innerText = j.nextAlarm;
+		
+		
 	});
 
 }, 1000);
