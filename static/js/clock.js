@@ -1,13 +1,11 @@
 'use strict';
 
 
-
-
-setInterval(() => {
-    const d = new Date(); //object of date()
-    const hr = d.getHours();
-    const min = d.getMinutes();
-    const sec = d.getSeconds();
+function drawClock(theDate) {
+	
+    const hr = theDate.getHours();
+    const min = theDate.getMinutes();
+    const sec = theDate.getSeconds();
     const hr_rotation = 30 * hr + min / 2; //converting current time
     const min_rotation = 6 * min;
     const sec_rotation = 6 * sec;
@@ -50,6 +48,18 @@ setInterval(() => {
     hourHand.style.transform = `rotate(${hr_rotation}deg)`;
     minuteHand.style.transform = `rotate(${min_rotation}deg)`;
     secondHand.style.transform = `rotate(${sec_rotation}deg)`;
+	
+}
+
+setInterval(() => {
+	
+	const url = '/now'
+	makeRequest({method: 'GET', url: url})
+	.then((response) => {
+		let j = JSON.parse(response);
+		const theDate = new Date(j.now);
+		drawClock(theDate)
+	});
 
 }, 1000);
 

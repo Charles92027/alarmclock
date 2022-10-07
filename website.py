@@ -20,10 +20,30 @@ def index():
 
 	return render_template("index.html", alarmList = alarms, soundList = sounds.listSounds())
 
+@app.route("/now")
+def now():
+	
+	#now.strftime("%Y-%m-%d %H:%M:%S")
+	
+	now = datetime.now()
+	nowObject = {
+		"now": now.isoformat(),
+		"year": now.year,
+		"month": now.month,
+		"day": now.day,
+		"hour": now.hour,
+		"minute": now.minute,
+		"second": now.second
+	}
+	return nowObject
+
+
 @app.route("/alarm/<id>", methods=("GET", "POST"))
 def editAlarm(id):
 
 	if request.method == "POST":
+	
+		delete = request.form.get("delete", 0)
 	
 		alarmId = request.form["alarmId"]
 		theTime = request.form["theTime"]
@@ -32,21 +52,29 @@ def editAlarm(id):
 		sound = request.form["sound"]
 		enabled = request.form.get("enabled", 0)
 	
-		if request.form.get("weekDay", "") != "":
-			weekDay = request.form.getlist("weekDay")
-		else:
-			weekDay = []
-
 		db = database.get_db_for_web()
-		db.execute(
-			"UPDATE alarm SET theTime = ?, startDate = ?, endDate = ?, sound = ?, enabled = ? WHERE id = ?;",
-			(theTime, startDate, endDate, sound, enabled, alarmId)
-		)
 
-		db.execute("DELETE FROM weekDay WHERE alarmId = {0};".format(alarmId))
+		if delete:
 
-		for wd in weekDay:
-			db.execute("INSERT INTO weekDay (alarmId, theDay) VALUES ({0}, {1});".format(alarmId, wd))
+			db.execute("DELETE FROM weekDay WHERE alarmId = {0};".format(alarmId))
+			db.execute("DELETE FROM alarm WHERE id = {0};".format(alarmId))
+
+		else:
+	
+			if request.form.get("weekDay", "") != "":
+				weekDay = request.form.getlist("weekDay")
+			else:
+				weekDay = []
+
+			db.execute(
+				"UPDATE alarm SET theTime = ?, startDate = ?, endDate = ?, sound = ?, enabled = ? WHERE id = ?;",
+				(theTime, startDate, endDate, sound, enabled, alarmId)
+			)
+
+			db.execute("DELETE FROM weekDay WHERE alarmId = {0};".format(alarmId))
+
+			for wd in weekDay:
+				db.execute("INSERT INTO weekDay (alarmId, theDay) VALUES ({0}, {1});".format(alarmId, wd))
 
 		db.commit()
 		return redirect("/")

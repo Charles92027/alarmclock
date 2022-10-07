@@ -1,4 +1,5 @@
 import board, threading, time, socket
+from datetime import datetime
 from time import strftime
 from adafruit_ht16k33.segments import BigSeg7x4
 from enum import Enum
@@ -58,6 +59,7 @@ class ClockFace:
 		while(self.state == ClockState.TIME):
 			stringTime = "  " + strftime("%-I:%M")
 			self.display.print(stringTime[-5:])
+			self.display.ampm = (datetime.now().hour >= 12)
 			time.sleep(.5)
 
 		self.nextState()
