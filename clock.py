@@ -3,6 +3,7 @@ from datetime import datetime
 from time import strftime
 from adafruit_ht16k33.segments import BigSeg7x4
 from enum import Enum
+from database import database
 
 class ClockState(Enum):
 	TIME = 0
@@ -15,6 +16,7 @@ class ClockFace:
 
 	i2c = None
 	display = None
+	brightness = 1
 	
 	state = ClockState.HELLO
 	stateThread = None
@@ -22,15 +24,25 @@ class ClockFace:
 	def __init__(self):
 		self.i2c = board.I2C()
 		self.display = BigSeg7x4(self.i2c, address=0x70)
-		self.display.brightness = 1.0
+		
+		
+		row = database.fetchOne("SELECT brightness FROM configuration LIMIT 1;")
+		newBrightness = row[0]
+		self.brightness = newBrightness
+		self.display.brightness = self.brightness
 
 		print("clockface initialized")
 		
 		self.stateThread = threading.Thread(target = self.helloState)
 		self.stateThread.start()
 		
-	def setBrightness(self, brightness):
-		self.display.brightness = brightness
+	def setBrightness(self, newBrightness):
+		self.brightness = newBrightness
+		self.display.brightness = self.brightness
+		database.nonQuery("UPDATE configuration SET brightness = {};".format(newBrightness))
+		
+	def getBrightness(self):
+		return self.brightness
 	
 	def clear(self):
 		self.display.fill(0)

@@ -1,6 +1,7 @@
 from pygame import mixer
 from threading import Thread
 import os, threading
+from database import database
 
 def listSounds():
 	sounds = []
@@ -20,13 +21,19 @@ class Player:
 	def __init__(self):
 	
 		mixer.init()
-		self.setVolume(.5)		#initialize from config
+		
+		row = database.fetchOne("SELECT volume FROM configuration LIMIT 1;")
+		newVolume = row[0]
+		self.volume = newVolume
+		self.setVolume(self.volume)
+		
 		print("player initialized")
 		
-	def setVolume(self, volume):
+	def setVolume(self, newVolume):
 		
-		self.volume = volume
+		self.volume = newVolume
 		mixer.music.set_volume(self.volume)
+		database.nonQuery("UPDATE configuration SET volume = {};".format(newVolume))
 
 	def getVolume(self):
 		return self.volume;

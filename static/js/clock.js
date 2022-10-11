@@ -60,6 +60,9 @@ setInterval(() => {
 		const theDate = new Date(j.now);
 		drawClock(theDate)
 		$("nextAlarm").innerText = j.nextAlarm;
+		$("timeZone").innerText = j.timeZone;
+		$("volume").innerText = j.volume;
+		$("brightness").innerText = j.brightness;
 		
 		
 	});

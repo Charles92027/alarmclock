@@ -8,6 +8,7 @@ from sounds import player
 import database
 from datetime import datetime
 from alarm import alarm
+from clock import clockFace
 
 @app.route("/")
 def index():
@@ -35,10 +36,26 @@ def now():
 		"hour": now.hour,
 		"minute": now.minute,
 		"second": now.second,
-		"nextAlarm": alarm.nextAlarmDateTime.strftime("%A, %B %-d, %Y, %-I:%M %p")
+		"nextAlarm": alarm.nextAlarmDateTime.strftime("%A, %B %-d, %Y, %-I:%M %p"),
+		"timeZone": "America/Los_Angeles", 
+		"volume": player.getVolume(), 
+		"brightness": clockFace.getBrightness()
 	}
 	return nowObject
+@app.route("/configure", methods=("GET", "POST"))
+def configure():
+	
+	if request.method == "POST":
+	
+		brightness = request.form.get("editBrightness", clockFace.getBrightness())
+		clockFace.setBrightness(float(brightness))
 
+		volume = request.form.get("editVolume", player.getVolume())
+		player.setVolume(float(volume))
+	
+		return redirect("/")
+		
+	return render_template("configure.html", timeZone = "America/Los_Angeles", volume = player.getVolume(), brightness = clockFace.getBrightness())
 
 @app.route("/alarm/<id>", methods=("GET", "POST"))
 def editAlarm(id):

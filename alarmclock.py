@@ -1,13 +1,13 @@
 import threading, atexit, time
 import RPi.GPIO as GPIO
-from clock import clockFace
 from buttons import bigButton
 from buttons import littleButton
 from flask import Flask
 from database import database
+from clock import clockFace
 from alarm import alarm
 
-bigButton.flash(5)
+#bigButton.flash(5)
 clockFace.address()
 time.sleep(.5)
 clockFace.time()

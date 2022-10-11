@@ -21,7 +21,6 @@ def get_db_for_web():
 
     return g.db
 
-
 class Database:
 
 	def __init__(self):
@@ -60,6 +59,17 @@ class Database:
 						alarmId INT NOT NULL REFERENCES alarm(id) ON DELETE CASCADE,
 						theDate DATETIME NOT NULL
 					);
+					
+					CREATE TABLE IF NOT EXISTS configuration (
+						id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+						timeZone TEXT NOT NULL,
+						volume REAL NOT NULL DEFAULT .5,
+						brightness REAL NOT NULL DEFAULT 1
+					);
+					
+					INSERT INTO configuration(timeZone, volume, brightness) 
+					SELECT 'America/Los_Angeles', .5, 1
+					WHERE NOT EXISTS(SELECT 1 FROM configuration);
 				"""	
 	
 		connection = sqlite3.connect("alarmclock.db")
@@ -241,7 +251,19 @@ class Database:
 
 		print(jsonResult)
 
-		return jsonResult	
+		return jsonResult
+		
+	def fetchOne(self, sql):
+		db = sqlite3.connect("alarmclock.db", detect_types=sqlite3.PARSE_DECLTYPES)
+		db.row_factory = sqlite3.Row
+		row = db.execute(sql).fetchone()
+		return row
+
+	def nonQuery(self, sql):
+		db = sqlite3.connect("alarmclock.db", detect_types=sqlite3.PARSE_DECLTYPES)
+		db.row_factory = sqlite3.Row
+		db.execute(sql)
+		db.commit();
 	
 
 database = Database()
