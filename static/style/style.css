@@ -62,6 +62,10 @@ body {
 	background-color:white;
 }
 
-   
-   
+.toolButton {
+	margin:10px;
+	height: 32px;
+	width: 32px;
+	fill: currentColor;
+}   
    
