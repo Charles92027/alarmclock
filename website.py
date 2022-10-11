@@ -9,6 +9,7 @@ import database
 from datetime import datetime
 from alarm import alarm
 from clock import clockFace
+import util
 
 @app.route("/")
 def index():
@@ -37,7 +38,7 @@ def now():
 		"minute": now.minute,
 		"second": now.second,
 		"nextAlarm": alarm.nextAlarmDateTime.strftime("%A, %B %-d, %Y, %-I:%M %p"),
-		"timeZone": "America/Los_Angeles", 
+		"timeZone": util.getTimeZone(), 
 		"volume": player.getVolume(), 
 		"brightness": clockFace.getBrightness()
 	}
@@ -52,10 +53,13 @@ def configure():
 
 		volume = request.form.get("editVolume", player.getVolume())
 		player.setVolume(float(volume))
+		
+		timeZone = request.form.get("editTimeZone", util.getTimeZone())
+		util.setTimeZone(timeZone)
 	
 		return redirect("/")
 		
-	return render_template("configure.html", timeZone = "America/Los_Angeles", volume = player.getVolume(), brightness = clockFace.getBrightness())
+	return render_template("configure.html", timeZone = util.getTimeZone(), timeZones = util.getTimeZones(), volume = player.getVolume(), brightness = clockFace.getBrightness())
 
 @app.route("/alarm/<id>", methods=("GET", "POST"))
 def editAlarm(id):
