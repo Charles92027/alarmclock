@@ -1,4 +1,5 @@
 from datetime import date
+import time
 from datetime import timedelta
 import os
 
@@ -23,8 +24,9 @@ def setTimeZone(newTimeZone):
 	database.nonQuery("UPDATE configuration SET timeZone = '{}';".format(newTimeZone))
 	
 	command = "sudo timedatectl set-timezone {}".format(newTimeZone)
-	print(command)
 	os.system(command)
+	
+	time.tzset()
 
 
 def getTimeZones():
