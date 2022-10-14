@@ -36,6 +36,11 @@ body {
 	border-collapse: separate;
 }
 
+#alarmTable td {
+	padding-left:20px;
+	padding-right:20px;
+}
+
 #clockCell {
 	/*max-width:150px;*/
 }
@@ -63,7 +68,7 @@ body {
 }
 
 .toolButton {
-	margin:10px;
+	margin:4px;
 	height: 32px;
 	width: 32px;
 	fill: currentColor;
