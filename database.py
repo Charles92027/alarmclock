@@ -252,6 +252,14 @@ class Database:
 		print(jsonResult)
 
 		return jsonResult
+	
+	def skipAlarm(self, alarmId):
+		self.skipAlarm(alarmId, datetime.today())
+
+	def skipAlarm(self, alarmId, theDate):
+
+		sql = "INSERT INTO skip (alarmId, theDate) VALUES ({}, '{}')".format(alarmId, theDate.isoformat());	
+		self.nonQuery(sql);
 		
 	def fetchOne(self, sql):
 		db = sqlite3.connect("alarmclock.db", detect_types=sqlite3.PARSE_DECLTYPES)

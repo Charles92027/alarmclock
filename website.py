@@ -29,6 +29,11 @@ def now():
 	#now.strftime("%Y-%m-%d %H:%M:%S")
 	
 	now = datetime.now()
+	nextAlarm = ""
+	if alarm.nextAlarmId:
+		nextAlarm = alarm.nextAlarmDateTime.strftime("%A, %B %-d, %Y, %-I:%M %p")
+	
+	
 	nowObject = {
 		"now": now.isoformat(),
 		"year": now.year,
@@ -37,12 +42,13 @@ def now():
 		"hour": now.hour,
 		"minute": now.minute,
 		"second": now.second,
-		"nextAlarm": alarm.nextAlarmDateTime.strftime("%A, %B %-d, %Y, %-I:%M %p"),
+		"nextAlarm": nextAlarm,
 		"timeZone": util.getTimeZone(), 
 		"volume": player.getVolume(), 
 		"brightness": clockFace.getBrightness()
 	}
 	return nowObject
+
 @app.route("/configure", methods=("GET", "POST"))
 def configure():
 	

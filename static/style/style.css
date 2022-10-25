@@ -10,6 +10,20 @@ body {
 	font-size:32px;
 }
 
+select {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight: 700;
+	font-size:32px;
+}
+
+input {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight: 700;
+	font-size:32px;
+}
+
+
+
 .hidden {
 	display: none;
 }

@@ -4,13 +4,15 @@ from time import strftime
 from adafruit_ht16k33.segments import BigSeg7x4
 from enum import Enum
 from database import database
+import buttons
 
 class ClockState(Enum):
 	TIME = 0
 	HELLO = 1
 	CHASING = 2
 	ADDRESS = 3
-	DONE = 4
+	WAKEUP = 4
+	DONE = 5
 
 class ClockFace:
 
@@ -103,7 +105,7 @@ class ClockFace:
 				index = 0
 
 		self.nextState()
-			
+	
 	def addressState(self):
 	
 		print("clockFace State = ", self.state)
@@ -130,6 +132,28 @@ class ClockFace:
 	
 		self.nextState()
 	
+	def wakeUpState(self):
+	
+		wakeup = [0b00111100, 0b00011110, 0b01110111, 0b01110110, 0b01111001, 0b00000000, 0b00111110, 0b01110011, 0b00000000]
+
+		self.clear()
+		startIndex = 0
+		
+		while(self.state == ClockState.WAKEUP):
+			letterIndex = startIndex
+			for cellIndex in range(4):
+				display.set_digit_raw(cellIndex, wakeup[letterIndex])
+				letterIndex += 1
+				if letterIndex >= 9:
+					letterIndex = 0
+			
+			time.sleep(.25)
+			
+			startIndex += 1
+			if startIndex >= 9:
+				startIndex = 0
+		
+		
 	def nextState(self):
 	
 		if self.state == ClockState.HELLO:
@@ -142,6 +166,10 @@ class ClockFace:
 	
 		elif self.state == ClockState.ADDRESS:
 			self.stateThread = threading.Thread(target = self.addressState)
+			self.stateThread.start()
+			
+		elif self.state == ClockState.WAKEUP:
+			self.stateThread = threading.Thread(target = self.wakeUpState)
 			self.stateThread.start()
 			
 		elif self.state == ClockState.DONE:
@@ -163,7 +191,10 @@ class ClockFace:
 		
 	def time(self):
 		self.state 	= ClockState.TIME
-		
+	
+	def wakeUp(self):
+		self.state = ClockState.wakeUp
+	
 	def done(self):
 		self.state = ClockState.DONE
 		self.stateThread.join()

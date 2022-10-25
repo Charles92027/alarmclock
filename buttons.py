@@ -9,7 +9,7 @@ class BigButton:
 
 	bigButtonLedPin = 16
 	bigButtonPin = 25
-
+	
 	def __init__(self):
 
 		GPIO.setup(self.bigButtonLedPin, GPIO.OUT)
@@ -31,25 +31,27 @@ class BigButton:
 			time.sleep(.2)
 			self.unlight()
 			time.sleep(.2)
-			
+
+	def isPressed(self):
+		return GPIO.input(bigButtonPin) == GPIO.HIGH
+	
 	def pressed(self, channel):
 		
 		if GPIO.input(channel) == GPIO.HIGH:
 		
+			buttonIsPressed = True
+		
 			print("big button pressed")
 			alarm.alarm.bigButtonPressed();
 			
-			# send the button press signal to the alarm object
-			
-			#clockFace.chase()
-
 			while GPIO.input(channel) == GPIO.HIGH:
 				pass
 
-			#clockFace.time()
+			buttonIsPressed = false
+			
+			alarm.alarm.bigButtonReleased();
 
 			print("big button released")
-			#self.flash(2)
 
 
 class LittleButton:

@@ -4,7 +4,7 @@ from enum import Enum
 from sounds import player
 
 from database import database
-import buttons
+import buttons, clock
 
 class AlarmState(Enum):
 	QUIET = 0
@@ -32,6 +32,16 @@ class Alarm:
 		self.stateThread = threading.Thread(target = self.quietState)
 		self.stateThread.start()
 
+	def loadNextAlarm(self):
+		recordset = database.getNextAlarm()
+		if recordset is None:
+			self.nextAlarmId = 0
+			# self.nextAlarmDate = self.nextAlarmTime = self.nextAlarmDateTime = self.nextAlarmSound = null
+		else:
+			self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound = recordset
+			self.nextAlarmDateTime = datetime.strptime(self.nextAlarmDateTime, "%Y-%m-%d %H:%M:%S")
+			print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
+
 	def quietState(self):
 	
 		print("alarm state State = ", self.state)
@@ -44,24 +54,23 @@ class Alarm:
 			
 			time.sleep(.1)
 		
-			#reload the data every minute
+			#reload the data every ten seconds
 			elapsed = time.time() - startTicking
-			if elapsed > 60:
-				recordset = database.getNextAlarm()
-				if recordset is not None:
-					self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound = recordset
-					self.nextAlarmDateTime = xTime = datetime.strptime(self.nextAlarmDateTime, "%Y-%m-%d %H:%M:%S")
-					print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
+			if elapsed > 10:
+				self.loadNextAlarm()
+				#print(self.nextAlarmId, self.nextAlarmDate, self.nextAlarmTime, self.nextAlarmDateTime, self.nextAlarmSound)
 				startTicking = time.time()
 
-			if self.lastAlarmDateTime != self.nextAlarmDateTime:
+			if self.nextAlarmId > 0:
 
-				rightNow = datetime.now()
-				interval = rightNow - self.nextAlarmDateTime
-				interMinutes = interval.total_seconds() / 60
+				if self.lastAlarmDateTime != self.nextAlarmDateTime:
 
-				if interMinutes >= 0:
-					self.state = AlarmState.ALARM
+					rightNow = datetime.now()
+					interval = rightNow - self.nextAlarmDateTime
+					interMinutes = interval.total_seconds() / 60
+
+					if interMinutes >= 0:
+						self.state = AlarmState.ALARM
 
 		self.nextState()
 
@@ -83,8 +92,7 @@ class Alarm:
 			# if too much time has passed since the alarm started, transition to the ESCALATION state
 			elapsed = time.time() - startTicking
 			if elapsed > 120:
-				pass
-				#self.state == AlarmState.ESCALATION
+				self.state == AlarmState.ESCALATION
 
 		self.nextState()
 
@@ -92,26 +100,42 @@ class Alarm:
 
 		print("alarm state State = ", self.state)
 	
-		# do something big here
-		# increase the volume, flash the display
+		clock.clockFace.wakeUp()
 	
-		while(self.state == AlarmState.ALARM):
+		while(self.state == AlarmState.ESCALATION):
 			bigButton.flash(1)	# this replaces our timer
-			# a button press will change the state back to quiet
+		
+		clock.clockFace.time()
 		
 		self.nextState()
 
 	def bigButtonPressed(self):
-		
+
 		if self.state == AlarmState.ALARM or self.state == AlarmState.ESCALATION:
 			self.state = AlarmState.QUIET
 
 		else:
-			pass
+
 			# if an alarm is due within the next 60 minutes then 
 			# wait until the button has been held for 5 seconds then
 			# flash the button three times
 			# and clear the next alarm
+
+			rightNow = datetime.now()
+			interval = rightNow - self.nextAlarmDateTime
+
+			if interval <= 3600:
+				while buttons.bigButton.isPressed():
+				
+					interval = datetime.now() - rightNow
+					if interval >= 5:
+						bigButton.flash(3)
+						database.skipAlarm(self.nextAlarmId)
+						self.loadNextAlarm()
+			
+	def bigButtonReleased(self):
+		pass
+
 
 	def nextState(self):
 	
