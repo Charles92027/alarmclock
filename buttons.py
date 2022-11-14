@@ -33,7 +33,7 @@ class BigButton:
 			time.sleep(.2)
 
 	def isPressed(self):
-		return GPIO.input(bigButtonPin) == GPIO.HIGH
+		return GPIO.input(self.bigButtonPin) == GPIO.HIGH
 	
 	def pressed(self, channel):
 		
@@ -47,7 +47,7 @@ class BigButton:
 			while GPIO.input(channel) == GPIO.HIGH:
 				pass
 
-			buttonIsPressed = false
+			buttonIsPressed = False
 			
 			alarm.alarm.bigButtonReleased();
 

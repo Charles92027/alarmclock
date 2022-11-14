@@ -74,6 +74,10 @@ class ClockFace:
 			stringTime = "  " + strftime("%-I:%M")
 			self.display.print(stringTime[-5:])
 			self.display.ampm = (datetime.now().hour >= 12)
+			
+			from alarm import alarm
+			self.display.bottom_left_dot = alarm.alarmPending()
+			
 			time.sleep(.5)
 
 		self.nextState()

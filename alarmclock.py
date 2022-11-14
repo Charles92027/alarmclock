@@ -7,7 +7,7 @@ from database import database
 from clock import clockFace
 from alarm import alarm
 
-#bigButton.flash(5)
+bigButton.flash(5)
 clockFace.address()
 time.sleep(.5)
 clockFace.time()
@@ -39,5 +39,11 @@ def shutDown():
 atexit.register(shutDown)
 
 app = Flask(__name__)
+
+import logging
+app.logger.disabled = True
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
 import website
 

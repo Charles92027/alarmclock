@@ -1,6 +1,6 @@
 import sqlite3
 import util
-import datetime
+from datetime import datetime
 from datetime import date
 from datetime import timedelta
 
@@ -253,12 +253,12 @@ class Database:
 
 		return jsonResult
 	
-	def skipAlarm(self, alarmId):
+	def skipAlarmToday(self, alarmId):
 		self.skipAlarm(alarmId, datetime.today())
 
 	def skipAlarm(self, alarmId, theDate):
 
-		sql = "INSERT INTO skip (alarmId, theDate) VALUES ({}, '{}')".format(alarmId, theDate.isoformat());	
+		sql = "INSERT INTO skip (alarmId, theDate) VALUES ({}, '{}')".format(alarmId, theDate.strftime("%Y-%m-%d"));	
 		self.nonQuery(sql);
 		
 	def fetchOne(self, sql):

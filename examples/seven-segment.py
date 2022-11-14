@@ -16,6 +16,12 @@ def printHello():
 	time.sleep(.2)
 	display.fill(0)
 
+def lightAll():
+	display.print("88:88")
+	display.top_left_dot = True
+	display.bottom_left_dot = True
+	display.ampm = True
+
 printHello()
 printHello()
 printHello()
@@ -36,7 +42,7 @@ message = "1234567890    "
 display.marquee(message, .25, False)
 
 startIndex = 0
-for loops in range(50):
+for loops in range(20):
 	letterIndex = startIndex
 	for cellIndex in range(4):
 		display.set_digit_raw(cellIndex, wakeup[letterIndex])
@@ -49,5 +55,12 @@ for loops in range(50):
 	if startIndex >= 9:
 		startIndex = 0
 
+for loops in range(4):
+	display.fill(0)
+	time.sleep(.25)
+	lightAll()
+	time.sleep(.25)
+
+time.sleep(4)
 
 display.fill(0)

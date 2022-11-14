@@ -96,6 +96,21 @@ class Alarm:
 
 		self.nextState()
 
+	def alarmPending(self):
+	
+		rval = False
+		
+		if self.nextAlarmId:
+			rightNow = datetime.now()
+			interval = self.nextAlarmDateTime - rightNow
+			totalSeconds = interval.total_seconds()
+			
+			if totalSeconds <= 3600:
+				rval = True
+			
+		return rval
+
+
 	def escalationState(self):
 
 		print("alarm state State = ", self.state)
@@ -117,20 +132,17 @@ class Alarm:
 		else:
 
 			# if an alarm is due within the next 60 minutes then 
-			# wait until the button has been held for 5 seconds then
+			# wait until the button has been held for 3 seconds then
 			# flash the button three times
 			# and clear the next alarm
-
-			rightNow = datetime.now()
-			interval = rightNow - self.nextAlarmDateTime
-
-			if interval <= 3600:
+			if self.alarmPending():
+				rightNow = datetime.now()
 				while buttons.bigButton.isPressed():
 				
 					interval = datetime.now() - rightNow
-					if interval >= 5:
-						bigButton.flash(3)
-						database.skipAlarm(self.nextAlarmId)
+					if interval.total_seconds() >= 3:
+						buttons.bigButton.flash(3)
+						database.skipAlarmToday(self.nextAlarmId)
 						self.loadNextAlarm()
 			
 	def bigButtonReleased(self):

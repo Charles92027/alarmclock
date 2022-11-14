@@ -3,20 +3,20 @@
 {% block primaryContent %}
 	<form method="POST">
 
-		<input type="hidden" id="alarmId" name="alarmId" value="{{alarm['id']}}" />
+		<input type="hidden" id="alarmId" name="alarmId" value="{{alarmRecord['id']}}" />
 
 		<table>
 			<tr>
 				<td>time:</td>
-				<td><input type="time" id="theTime" name="theTime" value="{{alarm['theTime']}}" required /></td>
+				<td><input type="time" id="theTime" name="theTime" value="{{alarmRecord['theTime']}}" required /></td>
 			</tr>
 			<tr>
 				<td>startDate:</td>
-				<td><input type="date" id="startDate" name="startDate" value="{{alarm['startDate']}}" required /></td>
+				<td><input type="date" id="startDate" name="startDate" value="{{alarmRecord['startDate']}}" required /></td>
 			</tr>
 			<tr>
 				<td>endDate:</td>
-				<td><input type="date" id="endDate" name="endDate" value="{{alarm['endDate']}}" required /></td>
+				<td><input type="date" id="endDate" name="endDate" value="{{alarmRecord['endDate']}}" required /></td>
 			</tr>
 			<tr>
 				<td>sound:</td>
@@ -24,7 +24,7 @@
 					<select id="sound" name="sound">
 						{% for sound in soundList %}
 							<option value="{{sound}}"
-								{% if sound == alarm['sound'] %}
+								{% if sound == alarmRecord['sound'] %}
 									selected
 								{% endif %}								
 							>
@@ -37,7 +37,7 @@
 			<tr>
 				<td>enabled:</td>
 				<td><input type="checkbox" id="enabled" name="enabled" value="1"
-					{% if alarm['enabled'] %}
+					{% if alarmRecord['enabled'] %}
 						checked
 					{% endif %}
 					/>

@@ -106,10 +106,13 @@ def editAlarm(id):
 				db.execute("INSERT INTO weekDay (alarmId, theDay) VALUES ({0}, {1});".format(alarmId, wd))
 
 		db.commit()
+		
+		alarm.loadNextAlarm()
+		
 		return redirect("/")
 
 	db = database.get_db_for_web()
-	alarm = db.execute(
+	alarmRecord = db.execute(
 		"SELECT DISTINCT"
 		" alarm.id, alarm.theTime, alarm.startDate, alarm.endDate, alarm.sound, alarm.enabled"
 		" FROM alarm WHERE alarm.id = {};".format(id)
@@ -139,7 +142,7 @@ def editAlarm(id):
 	).fetchall()
 
 	
-	return render_template("alarm.html", alarm = alarm, weekDays=weekDays, soundList = sounds.listSounds())
+	return render_template("alarm.html", alarmRecord = alarmRecord, weekDays=weekDays, soundList = sounds.listSounds())
 
 @app.route("/alarm/new", methods=("GET", "POST"))
 def newAlarm():
@@ -178,8 +181,8 @@ def newAlarm():
 		" UNION SELECT 0 alarmid, 6 theDay, '' checked "
 	).fetchall()
 
-	alarm = {'id': 0}
-	return render_template("alarm.html", alarm = alarm, weekDays=weekDays, soundList = sounds.listSounds())
+	alarmRecord = {'id': 0}
+	return render_template("alarm.html", alarmRecord = alarmRecord, weekDays=weekDays, soundList = sounds.listSounds())
 
 
 @app.route("/sounds/<sound>/play")
