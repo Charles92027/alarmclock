@@ -9,7 +9,7 @@ def listSounds():
 		if file.endswith(".mp3"):
 			sounds.append(file)
 
-	print(sounds)
+	#print(sounds)
 	return(sounds)
 
 class Player:

@@ -1,6 +1,5 @@
 'use strict';
 
-
 function drawClock(theDate) {
 	
     const hr = theDate.getHours();
