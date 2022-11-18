@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, threading, time
 import util
 from datetime import datetime
 from datetime import date
@@ -6,7 +6,6 @@ from datetime import timedelta
 
 from flask import current_app
 from flask import g
-
 
 def get_db_for_web():
     """Connect to the application's configured database. The connection
@@ -23,9 +22,14 @@ def get_db_for_web():
 
 class Database:
 
+	done = False
+	maintenanceThread = None
+
 	def __init__(self):
 		self.createSchema()
-		self.maintenance()
+
+		self.maintenanceThread = threading.Thread(target = self.maintenance)
+		self.maintenanceThread.start()
 
 	def createSchema(self):
 
@@ -80,38 +84,60 @@ class Database:
 		cursor.close()
 		
 		connection.close()
-		
+	
+	def stopMaintenance(self):
+		self.done = True
+		self.maintenanceThread.join()
+	
 	def maintenance(self):
 	
-		connection = sqlite3.connect("alarmclock.db")
-		cursor = connection.cursor()
+		lastMaintenanceRun = datetime.now() - timedelta(hours = 48)
 
-		# remove records older than a year
-		sql = "DELETE FROM CALENDAR WHERE theDate < DATE('NOW', 'LOCALTIME', '-1 YEAR')"
-		cursor.execute(sql)
-		sql = "DELETE FROM alarm WHERE endDate < DATE('NOW', 'LOCALTIME', '-1 YEAR')"
-		cursor.execute(sql)
+		while self.done == False:
 
-		today = date.today()
-		thisDayLastYear = util.addYears(today, -1)
-		lastDayOfNextYear = date(today.year + 1, 12, 31)
-		aDay = timedelta(days = 1)
+			interval = (datetime.now() - lastMaintenanceRun)
 
-		theDate = thisDayLastYear
-		aDay = timedelta(days = 1)
-
-		# insert calendar records to contain a list of dates from 1 year ago today to the last day of next year
-		while (theDate <= lastDayOfNextYear):
+			mm = interval.total_seconds() / 60
+			if mm > 2880:
 			
-			theDateS = theDate.strftime("%Y-%m-%d")
-			sql = "INSERT OR IGNORE INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
-			cursor.execute(sql)
-			theDate = theDate + aDay
+				connection = sqlite3.connect("alarmclock.db")
+				cursor = connection.cursor()
 
-		connection.commit()
-		cursor.close()
+				# remove records older than a year
+				sql = "DELETE FROM calendar WHERE theDate < DATE('NOW', 'LOCALTIME', '-1 YEAR')"
+				cursor.execute(sql)
+				sql = "DELETE FROM alarm WHERE endDate < DATE('NOW', 'LOCALTIME', '-1 YEAR')"
+				cursor.execute(sql)
 
-		connection.close()
+				# remove skip records older than three days
+				sql = "DELETE FROM skip WHERE theDate < DATE('NOW', 'LOCALTIME', '-3 DAY')"
+				cursor.execute(sql)
+
+				today = date.today()
+				aYearAgo = today - timedelta(days = 365)
+				lastDayOfNextYear = date(today.year + 1, 12, 31)
+				aDay = timedelta(days = 1)
+
+				theDate = aYearAgo
+				aDay = timedelta(days = 1)
+
+				# insert calendar records to contain a list of dates from 1 year ago today to the last day of next year
+				while (theDate <= lastDayOfNextYear):
+					
+					theDateS = theDate.strftime("%Y-%m-%d")
+					sql = "INSERT OR IGNORE INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
+					cursor.execute(sql)
+					theDate = theDate + aDay
+
+				connection.commit()
+				cursor.close()
+
+				connection.close()
+				
+				lastMaintenanceRun = datetime.now()
+			
+			time.sleep(1)
+
 		
 	def getNextAlarm(self):
 	
@@ -227,6 +253,7 @@ class Database:
 		return jsonResult	
 	
 	def getAlarm(id):
+	
 		sql = """
 			SELECT DISTINCT
 				alarm.id,

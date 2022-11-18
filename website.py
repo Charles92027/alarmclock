@@ -183,7 +183,7 @@ def newAlarm():
 
 		if request.form.get("skipDate", "") != "":
 			skipDate = request.form["skipDate"]
-			db.execute("insert into skip (alarmId, theDate) SELECT MAX(id), ? FROM alarm;", (skipDate))
+			db.execute("insert into skip (alarmId, theDate) SELECT MAX(id), {0} FROM alarm;".format(skipDate))
 
 		db.commit()
 		return redirect("/")

@@ -34,7 +34,6 @@ class ClockFace:
 		self.display.brightness = self.brightness
 
 		print("clockface initialized")
-		
 		self.stateThread = threading.Thread(target = self.helloState)
 		self.stateThread.start()
 		
@@ -157,6 +156,7 @@ class ClockFace:
 			if startIndex >= 9:
 				startIndex = 0
 		
+		self.nextState()
 		
 	def nextState(self):
 	

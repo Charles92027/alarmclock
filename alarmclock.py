@@ -28,7 +28,8 @@ def shutDown():
 	global waitThread
 	
 	print("shutting down")
-
+	
+	database.stopMaintenance();
 	clockFace.done()
 	
 	done = True

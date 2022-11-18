@@ -110,7 +110,6 @@ class Alarm:
 			
 		return rval
 
-
 	def escalationState(self):
 
 		print("alarm state State = ", self.state)
