@@ -103,8 +103,17 @@ def editAlarm(id):
 			db.execute("DELETE FROM weekDay WHERE alarmId = {0};".format(alarmId))
 
 			for wd in weekDay:
-				db.execute("INSERT INTO weekDay (alarmId, theDay) VALUES ({0}, {1});".format(alarmId, wd))
+				db.execute("INSERT INTO weekDay (alarmId, theDay) VALUES (?, ?);", (alarmId, wd))
 
+			if request.form.get("deleteSkip", "") != "":
+				deleteSkip = request.form.getlist("deleteSkip")
+				for ds in deleteSkip:
+					db.execute("DELETE FROM skip WHERE id={0};".format(ds))
+			
+			if request.form.get("skipDate", "") != "":
+				skipDate = request.form["skipDate"]
+				db.execute("insert into skip (alarmId, theDate) VALUES (?, ?);", (alarmId, skipDate))
+	
 		db.commit()
 		
 		alarm.loadNextAlarm()
@@ -141,8 +150,14 @@ def editAlarm(id):
 		" ORDER BY theDay;".format(id)
 	).fetchall()
 
+	skips = db.execute(
+		"SELECT DISTINCT"
+		" skip.id, alarmId, skip.theDate"
+		" FROM skip WHERE alarmId = {}"
+		" ORDER BY skip.theDate;".format(id)
+	).fetchall()
 	
-	return render_template("alarm.html", alarmRecord = alarmRecord, weekDays=weekDays, soundList = sounds.listSounds())
+	return render_template("alarm.html", alarmRecord = alarmRecord, weekDays=weekDays, soundList = sounds.listSounds(), skips=skips)
 
 @app.route("/alarm/new", methods=("GET", "POST"))
 def newAlarm():
@@ -165,6 +180,10 @@ def newAlarm():
 			weekDay = request.form.getlist("weekDay")
 			for wd in weekDay:
 				db.execute("INSERT INTO weekDay (alarmId, theDay) SELECT MAX(id), {0} FROM alarm;".format(wd))
+
+		if request.form.get("skipDate", "") != "":
+			skipDate = request.form["skipDate"]
+			db.execute("insert into skip (alarmId, theDate) SELECT MAX(id), ? FROM alarm;", (skipDate))
 
 		db.commit()
 		return redirect("/")

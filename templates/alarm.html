@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block primaryContent %}
 	<form method="POST">
 
@@ -61,8 +60,19 @@
 		<input type="submit" value="save" />
 {% endblock %}
 {% block secondaryContent %}
-
-
-	
+		<table>
+			{% for skip in skips %}
+				<tr>
+					<td>&nbsp;</td>
+					<td>{{skip['theDate']|strftime('%b %-d, %Y')}}</td>
+					<td><input type="checkbox" name="deleteSkip" value="{{skip['id']}}" /></td>
+				</tr>
+			{% endfor %}
+			<tr>
+				<td>Skip:</td>
+				<td><input type="date" id="skipDate" name="skipDate" value=""/></td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
 	</form>
 {% endblock %}

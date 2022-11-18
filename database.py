@@ -57,7 +57,7 @@ class Database:
 					CREATE TABLE IF NOT EXISTS skip (
 						id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 						alarmId INT NOT NULL REFERENCES alarm(id) ON DELETE CASCADE,
-						theDate DATETIME NOT NULL
+						theDate DATE NOT NULL
 					);
 					
 					CREATE TABLE IF NOT EXISTS configuration (
@@ -130,7 +130,7 @@ class Database:
 						ON alarm.startDate <= calendar.theDate
 						AND alarm.endDate >= calendar.theDate
 						AND calendar.theDate >= DATE('NOW', 'LOCALTIME')
-						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+1 DAY')
+						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+7 DAY')
 						AND weekDay.theDay = calendar.theDay
 				WHERE alarm.enabled = TRUE
 				UNION
@@ -147,7 +147,7 @@ class Database:
 						ON alarm.startDate <= calendar.theDate
 						AND alarm.endDate >= calendar.theDate
 						AND calendar.theDate >= DATE('NOW', 'LOCALTIME')
-						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+1 DAY')
+						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+7 DAY')
 				WHERE alarm.enabled = TRUE
 				AND weekDay.ID IS NULL
 
