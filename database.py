@@ -26,7 +26,7 @@ class Database:
 	maintenanceThread = None
 
 	def __init__(self):
-		self.createSchema()
+		# self.createSchema()
 
 		self.maintenanceThread = threading.Thread(target = self.maintenance)
 		self.maintenanceThread.start()
@@ -81,9 +81,26 @@ class Database:
 		# create the tables
 		cursor = connection.cursor()
 		cursor.executescript(schema)
-		cursor.close()
 		
+		today = date.today()
+		aYearAgo = today - timedelta(days = 365)
+		lastDay = date(2200, 12, 31)
+		
+		theDate = aYearAgo
+		aDay = timedelta(days = 1)
+
+		while (theDate <= lastDay):
+					
+			theDateS = theDate.strftime("%Y-%m-%d")
+			sql = "INSERT OR IGNORE INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
+			cursor.execute(sql)
+			theDate = theDate + aDay
+
+			connection.commit()
+
+		cursor.close()
 		connection.close()
+
 	
 	def stopMaintenance(self):
 		self.done = True
@@ -112,22 +129,6 @@ class Database:
 				# remove skip records older than three days
 				sql = "DELETE FROM skip WHERE theDate < DATE('NOW', 'LOCALTIME', '-3 DAY')"
 				cursor.execute(sql)
-
-				today = date.today()
-				aYearAgo = today - timedelta(days = 365)
-				lastDayOfNextYear = date(today.year + 1, 12, 31)
-				aDay = timedelta(days = 1)
-
-				theDate = aYearAgo
-				aDay = timedelta(days = 1)
-
-				# insert calendar records to contain a list of dates from 1 year ago today to the last day of next year
-				while (theDate <= lastDayOfNextYear):
-					
-					theDateS = theDate.strftime("%Y-%m-%d")
-					sql = "INSERT OR IGNORE INTO calendar(theDate, theDay) SELECT '" + theDateS + "' theDate, STRFTIME('%w', '" + theDateS + "') theDay;"
-					cursor.execute(sql)
-					theDate = theDate + aDay
 
 				connection.commit()
 				cursor.close()
