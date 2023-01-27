@@ -84,7 +84,7 @@ class Database:
 		
 		today = date.today()
 		aYearAgo = today - timedelta(days = 365)
-		lastDay = date(2200, 12, 31)
+		lastDay = date(2100, 12, 31)
 		
 		theDate = aYearAgo
 		aDay = timedelta(days = 1)

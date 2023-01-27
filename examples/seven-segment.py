@@ -5,7 +5,9 @@ lights = [[0b00000001, 0b00000000, 0b00000000, 0b00000000],[0b00000000, 0b000000
 wakeup = [0b00111100, 0b00011110, 0b01110111, 0b01110110, 0b01111001, 0b00000000, 0b00111110, 0b01110011, 0b00000000]
 i2c = board.I2C()
 display = BigSeg7x4(i2c, address=0x70)
-display.brightness = 1.0
+
+brightness = 1.00
+display.brightness = brightness
 
 def printHello():
 	time.sleep(.2)
@@ -61,6 +63,11 @@ for loops in range(4):
 	lightAll()
 	time.sleep(.25)
 
-time.sleep(4)
+time.sleep(2)
+
+while (brightness > 0):
+	display.brightness = brightness
+	time.sleep(.2)
+	brightness = brightness - .05
 
 display.fill(0)
