@@ -69,15 +69,20 @@ class ClockFace:
 		print("clockFace State = ", self.state)
 	
 		self.clear()
+		
 		while(self.state == ClockState.TIME):
-			stringTime = "  " + strftime("%-I:%M")
-			self.display.print(stringTime[-5:])
-			self.display.ampm = (datetime.now().hour >= 12)
-			
-			from alarm import alarm
-			self.display.bottom_left_dot = alarm.alarmPending()
-			
-			time.sleep(.5)
+		
+			try:
+				stringTime = "  " + strftime("%-I:%M")
+				self.display.print(stringTime[-5:])
+				self.display.ampm = (datetime.now().hour >= 12)
+				
+				from alarm import alarm
+				self.display.bottom_left_dot = alarm.alarmPending()
+				
+				time.sleep(.5)
+			except:
+				pass
 
 		self.nextState()
 	

@@ -24,6 +24,13 @@ def lightAll():
 	display.bottom_left_dot = True
 	display.ampm = True
 
+display.set_digit_raw(0, 0b01110110)
+display.set_digit_raw(1, 0b01111001)
+display.set_digit_raw(2, 0b00110110)
+display.set_digit_raw(3, 0b00111111)
+time.sleep(10)
+
+
 printHello()
 printHello()
 printHello()
@@ -65,9 +72,12 @@ for loops in range(4):
 
 time.sleep(2)
 
+print(brightness)
+
 while (brightness > 0):
 	display.brightness = brightness
 	time.sleep(.2)
 	brightness = brightness - .05
+	print(brightness)
 
 display.fill(0)
