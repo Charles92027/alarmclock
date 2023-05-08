@@ -143,48 +143,22 @@ class Database:
 	def getNextAlarm(self):
 	
 		sql = """
-			SELECT x.id, x.theDate, x.theTime, x.theDateTime, x.sound FROM (
-				SELECT
-					alarm.id,
-					calendar.theDate,
-					alarm.theTime,
-					DATETIME(calendar.theDate, alarm.theTime) theDateTime,
-					alarm.sound
-				FROM alarm
-					JOIN weekDay
-						ON alarm.id = weekDay.alarmId
-					JOIN calendar
-						ON alarm.startDate <= calendar.theDate
-						AND alarm.endDate >= calendar.theDate
-						AND calendar.theDate >= DATE('NOW', 'LOCALTIME')
-						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+7 DAY')
-						AND weekDay.theDay = calendar.theDay
-				WHERE alarm.enabled = TRUE
-				UNION
-				SELECT
-					alarm.id,
-					calendar.theDate,
-					alarm.theTime,
-					DATETIME(calendar.theDate, alarm.theTime) theDateTime,
-					alarm.sound
-				FROM alarm
-					LEFT JOIN weekDay
-						ON alarm.id = weekDay.alarmId
-					JOIN calendar
-						ON alarm.startDate <= calendar.theDate
-						AND alarm.endDate >= calendar.theDate
-						AND calendar.theDate >= DATE('NOW', 'LOCALTIME')
-						AND calendar.theDate <= DATE('NOW', 'LOCALTIME', '+7 DAY')
-				WHERE alarm.enabled = TRUE
-				AND weekDay.ID IS NULL
-
-			) AS x
-				LEFT JOIN skip
-					ON x.id = skip.alarmId
-					AND x.theDate = skip.theDate
-			WHERE skip.id IS NULL
-			AND x.theDateTime >= DATETIME('NOW', 'LOCALTIME')
-			ORDER BY x.theDateTime
+			SELECT
+				alarm.id, calendar.theDate, alarm.theTime,
+				DATETIME(calendar.theDate, alarm.theTime) theDateTime,
+				alarm.sound
+			FROM alarm
+			LEFT JOIN weekDay ON alarm.id = weekDay.alarmId
+			JOIN calendar ON alarm.startDate <= calendar.theDate
+				AND alarm.endDate >= calendar.theDate
+				AND calendar.theDate >= DATE('NOW', 'LOCALTIME')
+				AND (weekDay.theDay = calendar.theDay OR weekDay.theDay IS NULL)
+			LEFT JOIN skip ON alarm.id = skip.alarmId
+				AND calendar.theDate = skip.theDate
+			WHERE alarm.enabled = TRUE
+			AND skip.id IS NULL
+			AND theDateTime >= DATETIME('NOW', 'LOCALTIME')
+			ORDER BY theDateTime
 			LIMIT 1;
 			"""
 
