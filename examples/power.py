@@ -6,7 +6,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
 powerPin = 24
-lowBatteryPin = 6	# big button for now
+lowBatteryPin = 6
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -47,3 +47,5 @@ while GPIO.input(lowBatteryPin) == GPIO.LOW and GPIO.input(powerPin) == GPIO.HIG
 	stringTime = mask.format(int(hours), int(minutes))
 	
 	display.print(stringTime)
+
+print(stringTime)

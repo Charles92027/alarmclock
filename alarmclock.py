@@ -6,6 +6,7 @@ from flask import Flask
 from database import database
 from clock import clockFace
 from alarm import alarm
+from power import powerState
 
 bigButton.flash(5)
 clockFace.address()
@@ -18,6 +19,8 @@ def waitLoop():
 	global done
 	while done == False:
 		time.sleep(.5)
+		if (powerState.lowBattery()):
+			done = True
 
 waitThread = threading.Thread(target = waitLoop)
 waitThread.start()

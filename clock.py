@@ -73,7 +73,13 @@ class ClockFace:
 		while(self.state == ClockState.TIME):
 		
 			try:
-				stringTime = "  " + strftime("%-I:%M")
+				from power import powerState
+
+				if (powerState.hasPower()):
+					stringTime = "  " + strftime("%-I:%M")
+				else:
+					stringTime = "  :  "
+
 				self.display.print(stringTime[-5:])
 				self.display.ampm = (datetime.now().hour >= 12)
 				
